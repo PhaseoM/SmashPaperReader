@@ -1,0 +1,12 @@
+// This rule overwrites default react-pdf styles for links
+.annotationLayer {
+  & section {
+    border: none!important;
+    z-index: @z-index-annotation-link;
+  }
+
+  & .linkAnnotation > a:hover {
+    background: none;
+    box-shadow: none;
+  }
+}

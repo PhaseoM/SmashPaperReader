@@ -1,0 +1,328 @@
+@bounding-box-border: 2px dotted @initial-blue;
+
+.pdf-reader__page {
+  background: @pdflib-page-background center center / cover no-repeat;
+  margin: 24px;
+  box-shadow: 0px 4px 14px fade(@pdflib-page-shadow, 20%);
+  flex: 1 0 auto;
+  position: relative;
+}
+
+.pdf-reader__overlay {
+  position: absolute;
+}
+
+.pdf-reader__overlay-bounding-box {
+  position: absolute;
+  z-index: @z-index-bounding-box-overlay;
+}
+
+.pdf-reader__overlay-bounding-box-highlighted {
+  background-color: @initial-blue;
+  mix-blend-mode: screen;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:hover, &.selected  {
+    background-color: @hover-active-blue;
+    mix-blend-mode: screen;
+  }
+
+}
+
+.pdf-reader__overlay-bounding-box-underline {
+  pointer-events: none;
+  position: absolute;
+  z-index: @z-index-bounding-box-overlay;
+
+  &.rotate0 {
+    border-bottom: @bounding-box-border;
+  }
+  &.rotate90 {
+    border-left: @bounding-box-border;
+  }
+
+  &.rotate180 {
+    border-top: @bounding-box-border;
+  }
+
+  &.rotate270 {
+    border-right: @bounding-box-border;
+  }
+}
+
+.pdf-reader__is-building-page-image {
+  outline: 2px solid @loading-outline-yellow;
+}
+
+&.pdf-reader__page--render-type-single-canvas {
+  &.pdf-reader__page--no-page-image {
+    .react-pdf__Page__textContent {
+      color: initial;
+    }
+  }
+}
+
+&.pdf-reader__page--render-type-multi-canvas {
+  .react-pdf__Page {
+    .react-pdf__Page__canvas {
+      z-index: @z-index-multicanvas;
+    }
+  }
+  
+  &.pdf-reader__page--no-page-image {
+    .react-pdf__Page__textContent {
+      color: transparent;
+    }
+  }
+}
+
+.pdf-reader__page--is-loading-image {
+  left: 50%;
+  margin: 0 auto;
+  position: absolute;
+  transform: translateX(-50%);  
+  z-index: @z-index-loading-content;
+
+  .reader__page--is-loading-image-content {
+    background-color: @loading-outline-yellow;
+    height: 24px;
+    padding: 0px 12px;
+    text-align: center;
+    top: 0;
+    width: 125px;
+  }
+}
+
+.pdf-reader__page--has-page-image {
+  .textLayer {
+    color: transparent;
+    z-index: @z-index-text-layer;
+  }
+}
+
+.pdf-reader__page-highlight-overlay {
+  pointer-events: none;
+  position: absolute;
+  z-index: @z-index-bounding-box-overlay;
+}
+
+.pdf-reader__page__outline-target {
+  position: absolute;
+  visibility: hidden;
+}
+
+.react-pdf__Page {
+  height: 100%;
+}
+
+// HACK: avoid mis-alignment of selected texts
+.react-pdf__Page__textContent>span {
+  height: 0em!important;
+}
+
+.pdf-reader__download-btn, .pdf-reader__print-btn {
+  align-items: center;
+  display: flex;
+}
+
+.pdf-reader__page-number-control__current-page[type="number"]  {
+  border-radius: 3px;
+  height: 24px;
+  -moz-appearance: textfield;
+  text-align: center;
+  width: 24px;
+}
+
+.pdf-reader__page-number-control__total-pages {
+  border: none;
+}
+
+.pdf-reader__page-number-control__separator {
+  padding: 5px;
+}
+
+.pdf-reader__page-number-control__current-page::-webkit-inner-spin-button,
+.pdf-reader__page-number-control__current-page::-webkit-outer-spin-button { 
+	-webkit-appearance: none;
+}
+
+.pdf-reader__thumbnail {
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, .8);
+  cursor: pointer;
+  min-height: 250px;
+  opacity: .5;
+  transition: opacity 400ms ease-in-out;
+  width: 100%;
+
+  &.pdf-reader__thumbnail--no-image {
+    background-color: rgba(0, 0, 0, .1);
+  }
+
+  &:hover {
+    opacity: .75;
+    transition-duration: 75ms;
+  }
+
+  &.pdf-reader__thumbnail--is-visible {
+    opacity: 1;
+    transition-duration: 200ms;
+  }
+}
+
+.pdf-reader__thumbnail-list {
+  list-style: none;
+}
+
+.pdf-reader__thumbnail {
+  display: inline-block;
+}
+
+.pdf-reader__thumbnail-image {
+  width: 100%;
+} 
+
+.reader__thumbnail-list__item:nth-of-type(n + 1) {
+  margin-top: 16px;
+}
+
+.pdf-reader__side-panel {
+  background-color: @pdflib-page-background;
+  display: flex;
+  flex-direction: column;
+
+  &.pdf-reader__side-panel--hidden {
+    display: none;
+  }
+
+  .pdf-reader__resize-zone {
+    height: 100%;
+    position: absolute;
+    width: 15px;
+
+    &.pdf-reader__resize-zone--right {
+      right: 0;
+
+      .pdf-reader__drag-handle {
+        right: -9px;
+      }
+
+      .pdf-reader__drag-handle__assistive-input {
+        right: -36px;
+      }
+    }
+
+    &.pdf-reader__resize-zone--left {
+      left: 0;
+
+      .pdf-reader__drag-handle {
+        left: -9px;
+      }
+
+      .pdf-reader__drag-handle__assistive-input {
+        left: -36px;
+      }
+    }
+
+    &:hover {
+      .pdf-reader__drag-handle {
+        opacity: 1;
+        transition: opacity 100ms ease-in, transform 100ms ease-in-out;
+      }
+
+      // fade this one in after the handle fades in so user never sees it
+      // fade out before the handle fades out
+      .pdf-reader__drag-handle__assistive-input {
+        opacity: 1;
+        transition: opacity 200ms ease-in-out, transform 50ms ease-in-out;
+      }
+    }
+  }
+
+  .pdf-reader__drag-handle {
+    align-items: center;
+    background-color: @pdflib-page-background;
+    border: 1px solid @pdflib-grey-0;
+    border-radius: 12px;
+    cursor: col-resize;
+    display: flex;
+    height: 72px;
+    justify-content: center;
+    opacity: 0;
+    position: absolute;
+    top: calc(50% - 36px); // half the height to vertically center the handle
+    width: 18px;
+
+    .pdf-reader__drag-handle__inner {
+      background-color: @pdflib-grey-0;
+      border-radius: 6px;
+      height: 30px;
+      width: 5px;
+    }
+  }
+
+  // position input behind the drag handle so when you tab
+  // over it, the border highlight looks like it's around the drag handle
+  .pdf-reader__drag-handle__assistive-input {
+    direction: rtl;
+    height: 0px;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    transform: rotate(90deg);
+    width: 72px;
+
+    &:focus + .pdf-reader__drag-handle {
+      opacity: 1;
+    }
+  }
+
+  .pdf-reader__side-panel-overlay {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .pdf-reader__side-panel-title,
+  .pdf-reader__side-panel-content,
+  .pdf-reader__side-panel-footer {
+    padding: 5px 12px;
+  }
+
+  .pdf-reader__side-panel-close-button {
+    border-radius: 50%;
+    margin: 5px;
+    position: absolute;
+    right: 0px;
+  }
+}
+
+.pdf-reader__arrow-flag-base {
+  color: @pdflib-grey-3;
+
+  .pdf-reader__arrow-flag-base__flag {
+    position: absolute;
+    z-index: @z-index-arrow-flag;
+    
+    .pdf-reader__arrow-flag-base__flag-icon {
+      position: absolute;
+      fill: @pdflib-page-background;
+      stroke: @pdflib-grey-3;
+    }
+
+    .pdf-reader__arrow-flag-base__flag-label {
+      font-size: 11px;
+      font-weight: 300;
+    }
+  }
+
+  .pdf-reader__arrow-flag-base__tail {
+    position: absolute;
+    background-color: @pdflib-page-background;
+    border: 1px solid @pdflib-grey-3;
+    border-radius: 3px;
+  }
+}

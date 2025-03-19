@@ -1,0 +1,108 @@
+.reader__main {
+  background-color: @grey;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+}
+
+.reader__page-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: @grey;
+  height: 100%;
+  position: relative;
+}
+
+.reader__zoom-btn {
+  background-color: transparent;
+  border: none;
+  color: @blue;
+  
+  &:hover {
+    color: @light-blue;
+    cursor: pointer;
+  }
+}
+
+.reader__header {
+  background-color: @pdflib-page-background;
+  padding: 20px;
+  position: sticky;
+  text-align: center;
+  top: 0;
+  z-index: @z-index-header;
+  
+  .header-control {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 125px;
+
+    &.is-selected {
+      background-color: @grey;
+    }
+  }
+}
+
+.reader__outline-drawer {
+  left: 0;
+  position: fixed;
+  top: 100px;
+  z-index: @z-index-outline;
+}
+
+
+// HACK: -100px is accommodate for the header when we do outline scrolling
+.reader__page__outline-target {
+  transform: translateY(-100px);
+}
+
+.reader__popover__citation {
+  min-width: 270px;
+  max-width: 310px;
+
+  .reader__popover__citation-title {
+    font-weight: bold;
+  }
+
+  .reader__popover__citation-authors, 
+  .reader__popover__citation-year,
+  .reader__popover__citation-abstract {
+    font-weight: 300;
+  }
+}
+
+.reader__thumbnail-list {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+}
+
+.reader__thumbnail-list__item:nth-of-type(n + 1) {
+  margin-top: 16px;
+}
+
+.reader__thumbnail {
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, .8);
+  cursor: pointer;
+  min-height: 250px;
+  opacity: .5;
+  transition: opacity 400ms ease-in-out;
+  width: 100%;
+
+  &.reader__thumbnail--no-image {
+    background-color: rgba(0, 0, 0, .1);
+  }
+
+  &:hover {
+    opacity: .75;
+    transition-duration: 75ms;
+  }
+
+  &.reader__thumbnail--is-visible {
+    opacity: 1;
+    transition-duration: 200ms;
+  }
+}
+
