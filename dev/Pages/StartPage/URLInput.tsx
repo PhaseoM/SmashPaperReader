@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
+import { Button } from '@mantine/core';
 
 export default function PaperURLInput(props: RouteComponentProps) {
     const inRef = useRef<HTMLInputElement>(null);
@@ -29,7 +30,8 @@ export default function PaperURLInput(props: RouteComponentProps) {
     };
     return (
         <div>
-            <input className='PaperURLInput'
+            <input
+                className='PaperURLInput'
                 type="text"
                 ref={inRef}
                 placeholder='Please Enter the Paper URL'
