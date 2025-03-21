@@ -1,11 +1,10 @@
-import { ContextProvider } from '@allenai/pdf-components';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
-import { SmashPaperReader } from './PaperReader';
+import { SmashPaperReader } from './ReaderPage/PaperReader';
 import { StartPage } from './StartPage/Start'
-import NotFound from './NotFoundPage';
+import {NotFound} from './NotFoundPage/NotFoundPage';
 
 export default function IndexOfPage() {
     return (

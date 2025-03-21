@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Drawer, Button } from 'antd';
-import { Outline as PdfOutline, UiContext } from '@allenai/pdf-components';
+import { UiContext } from '@allenai/pdf-components';
 type Props = {
     parentRef: React.RefObject<HTMLDivElement>;
 };
@@ -25,7 +25,7 @@ export const InteractionDrawer: React.FunctionComponent<Props> = ({ parentRef }:
             getContainer={parentRef.current}
             className="reader__paperc-drawer">
             <div
-                className='InetractArea' 
+                className='InetractArea'
             >
 
             </div>
@@ -34,7 +34,7 @@ export const InteractionDrawer: React.FunctionComponent<Props> = ({ parentRef }:
                 className='usrInput'
                 placeholder='Please Enter'
             >
-                
+
             </input>
         </Drawer>
     );

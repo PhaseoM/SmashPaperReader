@@ -21,7 +21,7 @@ import { Outline } from './Outline';
 import { ScrollToDemo } from './ScrollToDemo';
 import { TextHighlightDemo } from './TextHighlightDemo';
 import { Thumbnail } from './Thumbnail';
-import { InteractionDrawer } from './InteractionLeftDrawer/InteractiionWithAI'
+import { InteractionDrawer } from '../myComponents/InteractionLeftDrawer/InteractiionWithAI'
 
 
 
@@ -92,7 +92,7 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
     //   <Route path="/">
     <div className="reader__container">
       <DemoHeaderContextProvider>
-        <Header pdfUrl={samplePdfUrl} />
+        {/* <Header pdfUrl={samplePdfUrl} /> */}
         <DocumentWrapper
           className="reader__main"
           file={samplePdfUrl}
