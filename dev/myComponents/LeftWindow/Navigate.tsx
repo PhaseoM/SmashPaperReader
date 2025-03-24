@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
     Navbar, Center, Tooltip, UnstyledButton, createStyles, Stack, rem, AppShell
 } from '@mantine/core';
@@ -18,9 +17,13 @@ import {
 } from '@tabler/icons-react';
 import { MantineLogo } from '@mantine/ds';
 import React from 'react';
-import { Reader } from '../components/Reader';
+import { Reader } from '../../components/Reader';
 import { ContextProvider } from '@allenai/pdf-components';
 import { RouteComponentProps } from 'react-router-dom';
+
+import { useState, useContext } from 'react';
+import * as ReactDOM from 'react-dom';
+import { NavItemContext } from '../../context/NavContext';
 
 const useStyles = createStyles((theme) => ({
     link: {
@@ -69,23 +72,26 @@ const mockdata = [
     { icon: IconBalloon, label: 'PaperCopilot' },
 ];
 
-export const Navigate= () => {
-    const [active, setActive] = useState(-1);
-
+export const Navigate: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
+    // const [active, setActive] = useState(-1);
+    const { itemSelected: active, setItemSelected: setActive } = useContext(NavItemContext);
     const links = mockdata.map((link, index) => (
         <NavbarLink
             {...link}
             key={link.label}
             active={index === active}
-            onClick={() => setActive(index)}
+            onClick={() => {
+                setActive(active === index ? -1 : index)
+            }
+            }
         />
     ));
 
     return (
-        <Navbar width={{ base: 70 }} p="10px">
-            <Center>
+        <Navbar width={{ base: 80 }} p="md">
+            {/* <Center>
                 <MantineLogo type="mark" size={30} />
-            </Center>
+            </Center> */}
             <Navbar.Section grow mt={50}>
                 <Stack justify="center" spacing={0}>
                     {links}
@@ -95,7 +101,12 @@ export const Navigate= () => {
                 <Stack justify="center" spacing={0}>
                     <NavbarLink icon={IconUser} label="User" />
                     <NavbarLink icon={IconSettings} label="Settings" />
-                    <NavbarLink icon={IconLogout} label="BacktoStart" />
+                    <NavbarLink
+                        icon={IconLogout}
+                        label="BacktoStart"
+                        onClick={() => {
+                            routeprops.history.push('/start');
+                        }} />
                 </Stack>
             </Navbar.Section>
         </Navbar>
