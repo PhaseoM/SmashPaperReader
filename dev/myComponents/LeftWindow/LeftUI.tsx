@@ -20,16 +20,28 @@ import useWindowSize from '../../utils/useWindowSize'
 import { relative } from 'path';
 export const LeftUI: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
     const [imp, setImp] = useState(0);
-    const [selectedId, setSelectedId] = useState(-1);
+    const [selectedIdL, setSelectedIdL] = useState(-1);
+    const [selectedIdR, setSelectedIdR] = useState(-1);
     const { width, height } = useWindowSize();
-    const [minSize, setMinSize] = useState(0);
-    const [maxSize, setMaxSize] = useState(0);
+
+
+    const [minSizeL, setMinSizeL] = useState(0);
+    const [maxSizeL, setMaxSizeL] = useState(0);
+    const [minSizeR, setMinSizeR] = useState(0);
+    const [maxSizeR, setMaxSizeR] = useState(0);
     useEffect(() => {
-        setMinSize(width * 0.3);
-        setMaxSize(width * 0.6);
+        setMinSizeL(width * 0.235);
+        setMaxSizeL(width * 0.425);
+
+        setMinSizeR(width * 0.65);
+        setMaxSizeR(width * 0.725);
     }, [width])
     return (
-        <NavItemContext.Provider value={{ impact: 0, itemSelected: selectedId, setItemSelected: setSelectedId }}>
+        <NavItemContext.Provider value={{
+            impact: 0,
+            itemSelectedL: selectedIdL, setItemSelectedL: setSelectedIdL,
+            itemSelectedR: selectedIdR, setItemSelectedR: setSelectedIdR
+        }}>
             <AppShell
                 // layout='alt'
                 navbar={<Navigate {...routeprops} />}
@@ -40,30 +52,51 @@ export const LeftUI: React.FunctionComponent<RouteComponentProps> = (routeprops)
                 {/* <SelectView isSelected={selectedId != -1} {...routeprops} /> */}
                 <ContextProvider>
                     <SplitPane
-                        // className='Resizer.vertical'
-                        // split='vertical'
-                        // defaultSize={selectedId != -1 ? 600 : 0}
-                        minSize={selectedId != -1 ? minSize : 0}
-                        maxSize={selectedId != -1 ? maxSize : 0}
-                        // resizerClassName={selectedId != -1 ? 'vertical' : 'horizontal'}
-                        // onDragFinished={() => {
-                        //     setC(c + 1);
-                        //     setC(c - 1);
-                        // }}
-                        onDragFinished={() => {
-                            setImp((imp + 1) % 10);
-                        }}
+                        defaultSize={selectedIdR != -1 ? maxSizeR : width}
+                        minSize={selectedIdR != -1 ? minSizeR : width}
+                        maxSize={selectedIdR != -1 ? maxSizeR : width}
                         resizerStyle={
-                            selectedId != -1 ? {
+                            selectedIdR != -1 ? {
                                 cursor: 'col-resize'
                             } : {
                                 cursor: 'default'
                             }}
                     >
-                        <CompVisiableControl />
-                        <ScrollArea h={height} type='hover' offsetScrollbars scrollHideDelay={500} >
-                            <Reader {...routeprops} />
-                        </ScrollArea>
+                        <SplitPane
+                            // className='Resizer.vertical'
+                            // split='vertical'
+                            defaultSize={selectedIdL != -1 ? minSizeL : 0}
+                            minSize={selectedIdL != -1 ? minSizeL : 0}
+                            maxSize={selectedIdL != -1 ? maxSizeL : 0}
+
+                            // resizerClassName={selectedId != -1 ? 'vertical' : 'horizontal'}
+                            // onDragFinished={() => {
+                            //     setC(c + 1);
+                            //     setC(c - 1);
+                            // }}
+                            onDragFinished={() => {
+                                setImp((imp + 1) % 10);
+                            }}
+                            resizerStyle={
+                                selectedIdL != -1 ? {
+                                    cursor: 'col-resize'
+                                } : {
+                                    cursor: 'default'
+                                }}
+                        >
+                            <CompVisiableControl />
+                            <ScrollArea h={height} type='hover' scrollHideDelay={500} >
+                                <Reader {...routeprops} />
+                            </ScrollArea>
+                            {/* <Pane/> */}
+                        </SplitPane>
+                        {selectedIdR != -1 ?
+                            <div>
+                                <ScrollArea h={height} type='hover' offsetScrollbars scrollHideDelay={500} >
+                                    nihao
+                                </ScrollArea>
+                            </div>
+                            : null}
                     </SplitPane>
                 </ContextProvider>
             </AppShell>

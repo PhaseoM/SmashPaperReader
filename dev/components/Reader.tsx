@@ -21,7 +21,6 @@ import { Outline } from './Outline';
 import { ScrollToDemo } from './ScrollToDemo';
 import { TextHighlightDemo } from './TextHighlightDemo';
 import { Thumbnail } from './Thumbnail';
-import { InteractionDrawer } from '../myComponents/InteractionLeftDrawer/InteractiionWithAI'
 import SplitPane from 'react-split-pane';
 import { CompVisiableControl } from '../myComponents/LeftWindow/CompVisiableControl';
 
@@ -92,43 +91,41 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
 
     setAnnotations(generateCitations(rawCitations, pageDimensions));
   }, [rawCitations, pageDimensions]);
-  const { itemSelected: selectedId, setItemSelected: setSelectedId } = React.useContext(NavItemContext)
 
   return (
     // <BrowserRouter>
     //   <Route path="/">
     <div className="reader__container">
       {/* <DemoHeaderContextProvider> */}
-      {/* <Header pdfUrl={samplePdfUrl} /> */}
-      <DocumentWrapper
-        className="reader__main"
-        file={samplePdfUrl}
-        inputRef={pdfContentRef}
-        renderType={RENDER_TYPE.SINGLE_CANVAS}
-      >
-        {/* <InteractionDrawer parentRef={pdfContentRef} />
-          <Outline parentRef={pdfContentRef} />
-          <Thumbnail parentRef={pdfContentRef} /> */}
-            <div className="reader__page-list" ref={pdfScrollableRef}>
-              {Array.from({ length: numPages }).map((_, i) => (
-                <PageWrapper key={i} pageIndex={i} renderType={RENDER_TYPE.SINGLE_CANVAS}>
-                  <Overlay>
-                    {/* <HighlightOverlayDemo pageIndex={i} />
-                <TextHighlightDemo pageIndex={i} /> */}
-                    <ScrollToDemo pageIndex={i} />
-                    <CitationsDemo
-                      annotations={annotations}
-                      pageIndex={i}
-                      parentRef={pdfScrollableRef}
-                    />
-                  </Overlay>
-                </PageWrapper>
-              ))}
-            </div>
-          </DocumentWrapper>
-          {/* <NoteTakingDemo /> */}
-          {/* </DemoHeaderContextProvider> */}
-        </div>
+        {/* <Header pdfUrl={samplePdfUrl} /> */}
+        <DocumentWrapper
+          className="reader__main"
+          file={samplePdfUrl}
+          inputRef={pdfContentRef}
+          renderType={RENDER_TYPE.SINGLE_CANVAS}
+        >
+          {/* <Outline parentRef={pdfContentRef} />
+        <Thumbnail parentRef={pdfContentRef} /> */}
+          <div className="reader__page-list" ref={pdfScrollableRef}>
+            {Array.from({ length: numPages }).map((_, i) => (
+              <PageWrapper key={i} pageIndex={i} renderType={RENDER_TYPE.SINGLE_CANVAS}>
+                <Overlay>
+                  {/* <HighlightOverlayDemo pageIndex={i} /> */}
+                  {/* <TextHighlightDemo pageIndex={i} /> */}
+                  {/* <ScrollToDemo pageIndex={i} /> */}
+                  <CitationsDemo
+                    annotations={annotations}
+                    pageIndex={i}
+                    parentRef={pdfScrollableRef}
+                  />
+                </Overlay>
+              </PageWrapper>
+            ))}
+          </div>
+        </DocumentWrapper>
+        {/* <NoteTakingDemo /> */}
+      {/* </DemoHeaderContextProvider> */}
+    </div>
     //   </Route>
     // </BrowserRouter>
   );

@@ -1,5 +1,5 @@
 import {
-    Navbar, Center, Tooltip, UnstyledButton, createStyles, Stack, rem, AppShell
+    Navbar, Center, Tooltip, UnstyledButton, createStyles, Stack, rem, AppShell, Divider
 } from '@mantine/core';
 import {
     IconListTree,
@@ -66,37 +66,63 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
     );
 }
 
-const mockdata = [
+const mockdataL = [
     { icon: IconListTree, label: 'Outline' },
     { icon: IconCategory, label: 'Thumbnail' },
     { icon: IconBalloon, label: 'PaperCopilot' },
 ];
 
+const mockdataR = [
+    { icon: IconBalloon, label: 'Digest' },
+];
+
 export const Navigate: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
     // const [active, setActive] = useState(-1);
-    const { itemSelected: active, setItemSelected: setActive } = useContext(NavItemContext);
-    const links = mockdata.map((link, index) => (
+    const {
+        itemSelectedL: activeL, setItemSelectedL: setActiveL,
+        itemSelectedR: activeR, setItemSelectedR: setActiveR,
+    } = useContext(NavItemContext);
+    const links_L = mockdataL.map((link, index) => (
         <NavbarLink
             {...link}
             key={link.label}
-            active={index === active}
+            active={index === activeL}
             onClick={() => {
-                setActive(active === index ? -1 : index)
+                setActiveL(activeL === index ? -1 : index)
             }
             }
         />
     ));
-
+    const links_R = mockdataR.map((link, index) => (
+        <NavbarLink
+            {...link}
+            key={link.label}
+            active={index === activeR}
+            onClick={() => {
+                setActiveR(activeR === index ? -1 : index)
+            }
+            }
+        />
+    ));
     return (
         <Navbar width={{ base: 80 }} p="md">
             {/* <Center>
                 <MantineLogo type="mark" size={30} />
             </Center> */}
             <Navbar.Section grow mt={50}>
-                <Stack justify="center" spacing={0}>
-                    {links}
+                <Stack justify="center" spacing={0} pb={10}>
+                    {links_L}
+                </Stack>
+                <Divider />
+                <Stack justify="center" spacing={0} pt={10}>
+                    {links_R}
                 </Stack>
             </Navbar.Section>
+            {/* <Navbar.Section grow mt={50}>
+                <Stack justify="center" spacing={0}>
+                    {links_R}
+                </Stack>
+            </Navbar.Section> */}
             <Navbar.Section>
                 <Stack justify="center" spacing={0}>
                     <NavbarLink icon={IconUser} label="User" />

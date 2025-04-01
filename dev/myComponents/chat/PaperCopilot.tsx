@@ -10,6 +10,8 @@ import useWindowSize from '../../utils/useWindowSize';
 import { Input } from 'antd';
 import { NavItemContext } from '../../context/NavContext';
 import { getActualWidthOfChars as getContextLen, opArgs } from '../../utils/useGetTextLength';
+import io from 'socket.io-client';
+import { socket } from '../socketio'
 const usrid = "130";
 
 const msginitiallist: msgList = [
@@ -30,12 +32,12 @@ const msginitiallist: msgList = [
         select: ":Ddjiailwjdljslkdjlkajdklwjdasdasd",
         context: "No,u can",
     },
-    {
-        ...msg_Ser_Loading()
-    },
-    {
-        ...msg_Err()
-    }
+    // {
+    //     ...msg_Ser_Loading()
+    // },
+    // {
+    //     ...msg_Err()
+    // }
 ]
 
 interface msgProps {
@@ -118,7 +120,7 @@ const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
                     </Box>
                 }
                 <Box
-                    w={Math.min(w, contextLen) + 10}
+                    w={Math.min(w, contextLen) + 5}
                 >
                     <Text style={{ whiteSpace: 'pre-line' }}>
                         {actualContext}
@@ -187,6 +189,7 @@ const MsgItem: React.FC<msgProps> = ({ w, msg }) => {
 
 
 export default function PaperCopliot() {
+    const [isConnected, setIsConnected] = useState(socket.connected);
     const [msglist, dispatch] = useReducer(msgReducer, msginitiallist);
     const [seltext, useSeltext] = useState<string | null>(null);
 
@@ -194,6 +197,43 @@ export default function PaperCopliot() {
     const wRef = useRef<HTMLDivElement | null>(null);
     const [width, setWidth] = useState(0);
     const { width: w, height } = useWindowSize();
+
+    useEffect(() => {
+        const onConnect = () => {
+            console.log("connect");
+            setIsConnected(true);
+        }
+        const onDisconnect = () => {
+            console.log("disconnect");
+            setIsConnected(false);
+        }
+        const onMsgGet = (event: { data: any; }) => {
+            const response = event.data;
+            const MsgData: msgState = {
+                id: spid.serverid,
+                msgid: response.msgid,
+                context: response.context,
+                select: response.select,
+                isloading: false
+            }
+            console.log(event.data);
+            handleMegGet(MsgData);
+        }
+        socket.on('connect', onConnect);
+        socket.on('disconnect', onDisconnect);
+        socket.on('server_response', (e) => {
+            setTimeout(() => { onMsgGet(e) }, 5000);
+        });
+        return () => {
+            socket.off('connect', onConnect);
+            socket.off('disconnect', onDisconnect);
+            socket.off('server_response', onMsgGet);
+        }
+    }, []);
+
+
+
+
     useEffect(() => {
         if (wRef.current) {
             setWidth(wRef.current.offsetWidth * 0.65);
@@ -215,11 +255,17 @@ export default function PaperCopliot() {
     const scrollToBottom = () => {
         if (viewportRef.current && viewportRef.current.scrollHeight) {
             viewportRef.current.scrollTo({ top: viewportRef.current.scrollHeight, behavior: 'smooth' });
-            console.log(viewportRef.current.scrollHeight);
+            // console.log(viewportRef.current.scrollHeight);
         }
     }
 
     const handleUsrSend = (send: string, select: string | null) => {
+        const message = {
+            id: usrid,
+            msgid: uuidv4(),
+            select: select,
+            send: send
+        }
         dispatch({
             type: msgact.USER_SEND,
             id: usrid,
@@ -230,32 +276,57 @@ export default function PaperCopliot() {
         dispatch({
             type: msgact.ADD_LOADING,
             id: spid.serverid,
-            msgid: uuidv4(),
+            msgid: message.msgid,
             select: null,
             send: "defaultContext_l"
         });
+        // console.log(`
+        //     type: ${msgact.USER_SEND},
+        //     id: ${usrid},
+        //     msgid: ${uuidv4()},
+        //     select: ${select},
+        //     send: ${send}`
+        // );
+        scrollToBottom();
 
-        console.log(`
-            type: ${msgact.USER_SEND},
-            id: ${usrid},
-            msgid: ${uuidv4()},
-            select: ${select},
-            send: ${send}`
-        );
-        // scrollToBottom() ;
-        setTimeout(() => { scrollToBottom() }, 100);
+        const msgjson = JSON.stringify(message);
+        socket.emit("client_message", msgjson);
+        // ws.send(msgjson);
+        // setTimeout(() => { scrollToBottom() }, 1);
+        // setTimeout(() => { handleMegGet("jdilkadsadasd jdiad11111111\ndasdasd dsa\nHello", loadingmsgid) }, 3000);
+        // handleMegGet("jdilkadsadasd jdiad11111111\ndasdasd dsa\nHello", loadingmsgid)
+
     }
-    // const handleUsrSend = () => {
 
-    // }
+    const handleMegGet = (response: msgState) => {
+        dispatch({
+            type: msgact.AI_SEND_NORMAL,
+            id: response.id,
+            msgid: response.msgid,
+            select: response.select,
+            send: response.context
+        });
+        scrollToBottom();
+        console.log("GetEnd");
+        // setTimeout(() => { scrollToBottom() }, 1);
+    }
 
-    let isFocus: Boolean = false;
+    const [isFocus, setIsFocus] = useState(false);
+    // useEffect(() => {
+    //     console.log("isForce:" + isFocus);
+    // }, [isFocus]);
     const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (isFocus) {
             if (event.key === 'Enter') {
+                event.preventDefault();
                 if (txtRef.current && txtRef.current.value) {
-                    handleUsrSend(txtRef.current.value, null)
-                    txtRef.current.value = "";
+                    handleUsrSend(txtRef.current.value, null);
+                    setTimeout(() => {
+                        if (txtRef.current && txtRef.current.value) {
+                            txtRef.current.value = "";
+                        }
+                    }, 1);
+                    // txtRef.current.value = "";
                 }
             }
         }
@@ -268,9 +339,10 @@ export default function PaperCopliot() {
                 viewportRef={viewportRef}
                 h={height - 80}
                 type='hover'
-                offsetScrollbars
+                // offsetScrollbars
                 scrollHideDelay={500}
                 scrollbarSize={6}
+                pb={10}
             >
                 {
                     width != 0 ?
@@ -309,10 +381,10 @@ export default function PaperCopliot() {
                         placeholder='Send a message to PaperCopilot'
                         radius="md"
                         onBlur={() => {
-                            isFocus = false;
+                            setIsFocus(false);
                         }}
                         onFocus={() => {
-                            isFocus = true;
+                            setIsFocus(true);
                         }}
                         onKeyPress={(e) => {
                             handleKeyPress(e);

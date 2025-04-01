@@ -13,19 +13,22 @@ import useWindowSize from '../../utils/useWindowSize';
 
 export const CompVisiableControl = () => {
     const { width, height } = useWindowSize();
-    const { itemSelected: id, setItemSelected: setId } = useContext(NavItemContext);
-    if (id === -1) {
+    const { 
+        itemSelectedL: idL, setItemSelectedL: setIdL,
+        itemSelectedR: idR, setItemSelectedR: setIdR,
+     } = useContext(NavItemContext);
+    if (idL === -1) {
         return null;
     }
     else {
-        switch (id) {
+        switch (idL) {
             case 0:
                 return (
                     <div className="reader__outline-drawer">
                         <ScrollArea
                             h={height}
                             type='hover'
-                            offsetScrollbars
+                            // offsetScrollbars
                             scrollHideDelay={500}
                             scrollbarSize={6}>
                             <Outline />;
@@ -38,7 +41,6 @@ export const CompVisiableControl = () => {
                         <ScrollArea
                             h={height}
                             type='hover'
-                            offsetScrollbars
                             scrollHideDelay={500}
                             scrollbarSize={6}>
                             <ThumbnailList />;

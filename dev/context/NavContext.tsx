@@ -3,12 +3,16 @@ import { RouteComponentProps } from 'react-router-dom';
 
 interface IF_NavItemContext {
     impact: number,
-    itemSelected: number;
-    setItemSelected: (itemSelected: number) => void;
+    itemSelectedL: number;
+    itemSelectedR: number;
+    setItemSelectedL: (itemSelectedL: number) => void;
+    setItemSelectedR: (itemSelectedR: number) => void;
 }
 
 export const NavItemContext = createContext<IF_NavItemContext>({
     impact: 0,
-    itemSelected: -1,
-    setItemSelected: () => { }
+    itemSelectedL: -1,
+    itemSelectedR: -1,
+    setItemSelectedL: () => { },
+    setItemSelectedR: () => { }
 });
