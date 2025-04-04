@@ -14,6 +14,7 @@ import {
     IconSettings,
     IconLogout,
     IconSwitchHorizontal,
+    IconBooks,
 } from '@tabler/icons-react';
 import { MantineLogo } from '@mantine/ds';
 import React from 'react';
@@ -73,7 +74,7 @@ const mockdataL = [
 ];
 
 const mockdataR = [
-    { icon: IconBalloon, label: 'Digest' },
+    { icon: IconBooks, label: 'Digest' },
 ];
 
 export const Navigate: React.FunctionComponent<RouteComponentProps> = (routeprops) => {

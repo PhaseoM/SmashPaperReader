@@ -8,8 +8,10 @@ import { Thumbnail } from '../../components/Thumbnail';
 import { ThumbnailList } from '@allenai/pdf-components';
 import { Outline } from '@allenai/pdf-components';
 
-import PaperCopilot from '../chat/PaperCopilot';
+import PaperCopilot from '../LeftWindow/PaperCopilot';
 import useWindowSize from '../../utils/useWindowSize';
+
+
 
 export const CompVisiableControl = () => {
     const { width, height } = useWindowSize();

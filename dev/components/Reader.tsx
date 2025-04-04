@@ -22,7 +22,7 @@ import { ScrollToDemo } from './ScrollToDemo';
 import { TextHighlightDemo } from './TextHighlightDemo';
 import { Thumbnail } from './Thumbnail';
 import SplitPane from 'react-split-pane';
-import { CompVisiableControl } from '../myComponents/LeftWindow/CompVisiableControl';
+import { CompVisiableControl } from '../myComponents/Navigation/CompVisiableControl';
 
 
 import { NavItemContext } from '../context/NavContext';

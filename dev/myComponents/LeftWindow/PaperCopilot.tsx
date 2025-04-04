@@ -221,9 +221,7 @@ export default function PaperCopliot() {
         }
         socket.on('connect', onConnect);
         socket.on('disconnect', onDisconnect);
-        socket.on('server_response', (e) => {
-            setTimeout(() => { onMsgGet(e) }, 5000);
-        });
+        socket.on('server_response', onMsgGet);
         return () => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);

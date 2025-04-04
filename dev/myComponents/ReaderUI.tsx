@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import * as ReactDOM from 'react-dom';
-import { NavItemContext } from '../../context/NavContext';
+import { NavItemContext } from '../context/NavContext';
 import React from 'react';
 import { AppShell, Container, ScrollArea } from '@mantine/core';
 import SplitPane from 'react-split-pane';
@@ -8,17 +8,22 @@ import Pane from 'react-split-pane';
 import { Allotment } from 'allotment'
 import { Route, RouteComponentProps } from 'react-router-dom';
 
-import { Navigate } from './Navigate';
-import { CompVisiableControl } from './CompVisiableControl';
-import { Reader } from '../../components/Reader';
+import { Navigate } from './Navigation/Navigate';
+import { CompVisiableControl } from './Navigation/CompVisiableControl';
+
+import { Digest } from './RightWindow/Digest';
+
+import { Reader } from '../components/Reader';
 import { ContextProvider } from '@allenai/pdf-components';
 import "allotment/dist/style.css";
-import "../../css/splitter.css"
+import "../css/splitter.css"
 
 
-import useWindowSize from '../../utils/useWindowSize'
+import useWindowSize from '../utils/useWindowSize'
+
+
 import { relative } from 'path';
-export const LeftUI: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
+export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
     const [imp, setImp] = useState(0);
     const [selectedIdL, setSelectedIdL] = useState(-1);
     const [selectedIdR, setSelectedIdR] = useState(-1);
@@ -93,7 +98,7 @@ export const LeftUI: React.FunctionComponent<RouteComponentProps> = (routeprops)
                         {selectedIdR != -1 ?
                             <div>
                                 <ScrollArea h={height} type='hover' offsetScrollbars scrollHideDelay={500} >
-                                    nihao
+                                    <Digest />
                                 </ScrollArea>
                             </div>
                             : null}

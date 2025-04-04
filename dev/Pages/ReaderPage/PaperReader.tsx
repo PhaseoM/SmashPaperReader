@@ -3,12 +3,12 @@ import { ContextProvider } from '@allenai/pdf-components';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router';
-import { Navigate } from '../../myComponents/LeftWindow/Navigate';
+import { Navigate } from '../../myComponents/Navigation/Navigate';
 import { AppShell } from '@mantine/core';
-import { LeftUI } from '../../myComponents/LeftWindow/LeftUI'
+import { ReaderUI } from '../../myComponents/ReaderUI'
 
 export const SmashPaperReader: React.FunctionComponent<RouteComponentProps> = (props) => {
     return (
-        < LeftUI {...props} />
+        < ReaderUI {...props} />
     );
 };
