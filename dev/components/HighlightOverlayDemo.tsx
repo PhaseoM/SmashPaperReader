@@ -1,4 +1,6 @@
-import { BoundingBox, BoundingBoxType, HighlightOverlay, UiContext } from '@allenai/pdf-components';
+import { BoundingBoxType, UiContext } from '@allenai/pdf-components';
+import { BoundingBox } from '../myComponents/Highlight/myBoundingBox';
+import { HighlightOverlay } from '../myComponents/Highlight/myHighlightOverlay';
 import * as React from 'react';
 
 type Props = {
@@ -9,10 +11,10 @@ type Props = {
  * Example of the HighlightOverlay component
  */
 export const HighlightOverlayDemo: React.FunctionComponent<Props> = ({ pageIndex }: Props) => {
-  const { isShowingHighlightOverlay } = React.useContext(UiContext);
-  if (!isShowingHighlightOverlay) {
-    return null;
-  }
+  // const { isShowingHighlightOverlay } = React.useContext(UiContext);
+  // if (!isShowingHighlightOverlay) {
+  //   return null;
+  // }
 
   function getBoundingBoxProps(): Array<BoundingBoxType> {
     return [
@@ -59,11 +61,11 @@ export const HighlightOverlayDemo: React.FunctionComponent<Props> = ({ pageIndex
         width: 550,
       },
       {
-        page: 1,
-        top: 265,
-        left: 130,
-        height: 15,
-        width: 200,
+        page: 2,
+        top: 0,
+        left: 0,
+        height: 500,
+        width: 500,
       },
     ];
   }
@@ -85,6 +87,7 @@ export const HighlightOverlayDemo: React.FunctionComponent<Props> = ({ pageIndex
     });
     return boxes;
   }
+
 
   return (
     <HighlightOverlay pageIndex={pageIndex}>

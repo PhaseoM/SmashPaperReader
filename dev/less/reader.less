@@ -29,15 +29,15 @@
 .reader__header {
   background-color: @pdflib-page-background;
   padding: 20px;
-  position: sticky;
+  position: fixed;
   text-align: center;
-  top: 0;
-  z-index: @z-index-header;
+  bottom: 0;
+  z-index: 1000;
 
   .header-control {
-    display: inline-block;
-    margin-top: 10px;
-    margin-right: 125px;
+    // display: inline-block;
+    // margin-top: 10px;
+    // margin-right: 125px;
 
     &.is-selected {
       background-color: @grey;
@@ -105,4 +105,36 @@
     opacity: 1;
     transition-duration: 200ms;
   }
+}
+
+.reader_highlight_bbox {
+  background-color: @initial-blue;
+  mix-blend-mode: screen;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:hover,
+  &.selected {
+    background-color: @hover-active-blue;
+    mix-blend-mode: screen;
+  }
+}
+
+.reader_ZoomControl {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  //width: 100%;
+  bottom: 0;
+  z-index: 1000;
+  padding: 0px 40% 10px 40%;
+  background: white;
+  background-clip: content-box;
+  // background-size: 0px 0px;
+  // background-size: calc(100% - 500px) calc(100% - 500px);
+  background-position: center;
 }

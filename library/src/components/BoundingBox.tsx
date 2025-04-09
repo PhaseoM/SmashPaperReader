@@ -48,9 +48,10 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
   return (
     <React.Fragment>
       <div
-        className={`pdf-reader__overlay-bounding-box-underline ${
-          underlineClassName || rotationClassName()
-        }`}
+        // className={`pdf-reader__overlay-bounding-box-underline ${
+        //   underlineClassName || rotationClassName()
+        // }`}
+        className='pdf-reader__overlay-bounding-box-highlighted'
         style={getBoundingBoxStyle()}
       />
       <div

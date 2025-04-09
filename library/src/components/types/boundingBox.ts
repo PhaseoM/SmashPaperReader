@@ -10,6 +10,7 @@ export type Origin = {
   left: number;
 };
 
+
 export type Size = Dimensions & Origin;
 
 export type BoundingBox = {

@@ -1,6 +1,7 @@
-import { useState, useContext, useEffect, useRef } from 'react';
+import { useState, useContext, useEffect, useRef, createRef } from 'react';
 import * as ReactDOM from 'react-dom';
 import { NavItemContext } from '../context/NavContext';
+import { ToolPopContext } from '../context/PopoverConext';
 import React from 'react';
 import { AppShell, Container, ScrollArea } from '@mantine/core';
 import SplitPane from 'react-split-pane';
@@ -23,10 +24,29 @@ import useWindowSize from '../utils/useWindowSize'
 
 
 import { relative } from 'path';
+import { PopoverUp } from './ToolPopover';
+import { SimpleZoomControl } from '../components/SimpleZoomControl';
 export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
     const [imp, setImp] = useState(0);
     const [selectedIdL, setSelectedIdL] = useState(-1);
     const [selectedIdR, setSelectedIdR] = useState(-1);
+
+    //ToolPopContext
+    const [textSelected, setTextSelected] = useState(false);
+    const [textPos, setTextPos] = useState({
+        page: 0,
+        height: 0,
+        width: 0,
+        top: 0,
+        left: 0,
+        x: 0,
+        y: 0
+    });
+    const [text, setText] = useState("");
+
+    const [mousepos, setMousepos] = useState({ x: 0, y: 0 });
+
+
     const { width, height } = useWindowSize();
 
 
@@ -34,6 +54,7 @@ export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprop
     const [maxSizeL, setMaxSizeL] = useState(0);
     const [minSizeR, setMinSizeR] = useState(0);
     const [maxSizeR, setMaxSizeR] = useState(0);
+
     useEffect(() => {
         setMinSizeL(width * 0.235);
         setMaxSizeL(width * 0.425);
@@ -91,7 +112,19 @@ export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprop
                         >
                             <CompVisiableControl />
                             <ScrollArea h={height} type='hover' scrollHideDelay={500} >
-                                <Reader {...routeprops} />
+                                <ToolPopContext.Provider value={{
+                                    textSelected: textSelected,
+                                    textPos: textPos,
+                                    text: text,
+                                    setTextSelected: setTextSelected,
+                                    setTextPos: setTextPos,
+                                    setText: setText,
+                                }}>
+                                    <Reader {...routeprops} />
+                                </ToolPopContext.Provider>
+                                <div className='reader_ZoomControl'>
+                                    <SimpleZoomControl />
+                                </div>
                             </ScrollArea>
                             {/* <Pane/> */}
                         </SplitPane>

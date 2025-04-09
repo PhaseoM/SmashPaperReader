@@ -1,4 +1,4 @@
-import { BoundingBox } from '@allenai/pdf-components';
+import { BoundingBox } from '../myComponents/Highlight/myBoundingBox';
 import * as React from 'react';
 
 type Props = {
@@ -15,6 +15,7 @@ export const ScrollToDemo: React.FunctionComponent<Props> = ({ pageIndex }: Prop
     left: 250,
     height: 340,
     width: 320,
+    color: "green"
   };
 
   if (pageIndex !== boundingBoxProps.page) {

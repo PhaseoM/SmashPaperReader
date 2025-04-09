@@ -199,14 +199,6 @@ export default function PaperCopliot() {
     const { width: w, height } = useWindowSize();
 
     useEffect(() => {
-        const onConnect = () => {
-            console.log("connect");
-            setIsConnected(true);
-        }
-        const onDisconnect = () => {
-            console.log("disconnect");
-            setIsConnected(false);
-        }
         const onMsgGet = (event: { data: any; }) => {
             const response = event.data;
             const MsgData: msgState = {
@@ -219,12 +211,8 @@ export default function PaperCopliot() {
             console.log(event.data);
             handleMegGet(MsgData);
         }
-        socket.on('connect', onConnect);
-        socket.on('disconnect', onDisconnect);
         socket.on('server_response', onMsgGet);
         return () => {
-            socket.off('connect', onConnect);
-            socket.off('disconnect', onDisconnect);
             socket.off('server_response', onMsgGet);
         }
     }, []);

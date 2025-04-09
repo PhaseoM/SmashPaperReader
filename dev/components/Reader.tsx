@@ -2,9 +2,11 @@ import {
   DocumentContext,
   DocumentWrapper,
   Overlay,
+  PageRenderContext,
   PageWrapper,
   RENDER_TYPE,
   ScrollContext,
+  TransformContext,
 } from '@allenai/pdf-components';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
@@ -26,9 +28,15 @@ import { CompVisiableControl } from '../myComponents/Navigation/CompVisiableCont
 
 
 import { NavItemContext } from '../context/NavContext';
-import { ScrollArea } from '@mantine/core';
+import { ScrollArea, Menu, Button, Text } from '@mantine/core';
 import useWindowSize from '../utils/useWindowSize';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { IconArrowsLeftRight, IconMessageCircle, IconPhoto, IconSearch, IconSettings, IconTrash } from '@tabler/icons-react';
+import { SimpleZoomControl } from './SimpleZoomControl';
+import { PopoverUp } from '../myComponents/ToolPopover';
+import { ToolPopContext } from '../context/PopoverConext';
+import { generatePageIdFromIndex } from '@allenai/pdf-components/src/utils/scroll';
+import { socket } from '../myComponents/socketio';
 
 
 export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
@@ -91,39 +99,85 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
 
     setAnnotations(generateCitations(rawCitations, pageDimensions));
   }, [rawCitations, pageDimensions]);
+  // console.log(`----------${numPages}------------`)
 
+
+
+
+  // useEffect(() => {
+  //   socket.emit('downloadpdf', { url: samplePdfUrl });
+  //   const RecieveMsg = (event: { data: { filename: string } }) => {
+  //     console.log(event.data.filename);
+  // }
+  //   socket.on('download_end', RecieveMsg);
+  //   return () => {
+  //     socket.off('download_end', RecieveMsg);
+  //   };
+  // }, [])
+
+
+  useEffect(() => {
+    const element = pdfContentRef.current;
+
+    const sendEvent = () => {
+      console.log("=========sendhl success=========");
+      socket.emit('hl_poll_request');
+    }
+
+    // if (element) {
+    console.log("????????????????????")
+    window.addEventListener('load', sendEvent);
+    // }
+
+    return () => {
+      // if (element) {
+      window.removeEventListener('load', sendEvent);
+      // }
+    };
+  }, [])
+
+
+  const dRef = useRef(null);
   return (
     // <BrowserRouter>
     //   <Route path="/">
-    <div className="reader__container">
+    <div
+      className="reader__container"
+      ref={dRef}
+    >
       {/* <DemoHeaderContextProvider> */}
-        {/* <Header pdfUrl={samplePdfUrl} /> */}
-        <DocumentWrapper
-          className="reader__main"
-          file={samplePdfUrl}
-          inputRef={pdfContentRef}
-          renderType={RENDER_TYPE.SINGLE_CANVAS}
-        >
-          {/* <Outline parentRef={pdfContentRef} />
+      {/* <Header pdfUrl={samplePdfUrl} /> */}
+      <DocumentWrapper
+        className="reader__main"
+        file={samplePdfUrl}
+        inputRef={pdfContentRef}
+        renderType={RENDER_TYPE.SINGLE_CANVAS}
+      >
+        {/* <Outline parentRef={pdfContentRef} />
         <Thumbnail parentRef={pdfContentRef} /> */}
-          <div className="reader__page-list" ref={pdfScrollableRef}>
-            {Array.from({ length: numPages }).map((_, i) => (
-              <PageWrapper key={i} pageIndex={i} renderType={RENDER_TYPE.SINGLE_CANVAS}>
-                <Overlay>
-                  {/* <HighlightOverlayDemo pageIndex={i} /> */}
-                  {/* <TextHighlightDemo pageIndex={i} /> */}
-                  {/* <ScrollToDemo pageIndex={i} /> */}
-                  <CitationsDemo
-                    annotations={annotations}
-                    pageIndex={i}
-                    parentRef={pdfScrollableRef}
-                  />
-                </Overlay>
-              </PageWrapper>
-            ))}
-          </div>
-        </DocumentWrapper>
-        {/* <NoteTakingDemo /> */}
+        <div className="reader__page-list" ref={pdfScrollableRef}>
+          {Array.from({ length: numPages }).map((_, i) => (
+            <PageWrapper key={i} pageIndex={i} renderType={RENDER_TYPE.SINGLE_CANVAS}>
+              <Overlay>
+                {/* <HighlightOverlayDemo pageIndex={i} /> */}
+                <TextHighlightDemo pageIndex={i} />
+                <ScrollToDemo pageIndex={i} />
+                <CitationsDemo
+                  annotations={annotations}
+                  pageIndex={i}
+                  parentRef={pdfScrollableRef}
+                />
+                <PopoverUp
+                  annotations={annotations}
+                  pageIndex={i}
+                  parentRef={pdfScrollableRef}
+                />
+              </Overlay>
+            </PageWrapper>
+          ))}
+        </div>
+      </DocumentWrapper>
+      {/* <NoteTakingDemo /> */}
       {/* </DemoHeaderContextProvider> */}
     </div>
     //   </Route>

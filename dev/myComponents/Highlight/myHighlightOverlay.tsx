@@ -1,20 +1,18 @@
 import * as React from 'react';
 
-import { DocumentContext } from '../context/DocumentContext';
-import { TransformContext } from '../context/TransformContext';
-import { computeBoundingBoxStyle, computePageStyle } from '../utils/style';
-import { Props as BoundingBoxProps } from './BoundingBox';
+import { DocumentContext } from '@allenai/pdf-components';
+import { TransformContext } from '@allenai/pdf-components';
+import { computeBoundingBoxStyle, computePageStyle } from '@allenai/pdf-components';
+import { BoundingBoxProps } from '@allenai/pdf-components';
 
 export type Props = {
   children?: React.ReactElement<BoundingBoxProps> | Array<React.ReactElement<BoundingBoxProps>>;
   pageIndex: number;
-  color: string;
 };
 
 export const HighlightOverlay: React.FunctionComponent<Props> = ({
   children,
   pageIndex,
-  color,
   ...extraProps
 }: Props) => {
   const { pageDimensions } = React.useContext(DocumentContext);
@@ -35,7 +33,7 @@ export const HighlightOverlay: React.FunctionComponent<Props> = ({
       return boxes.map((box, i) => {
         const boxStyle = computeBoundingBoxStyle(box.props, pageDimensions, rotation, scale);
         return (
-          <rect style={boxStyle} x={boxStyle.left} y={boxStyle.top} key={i} fill={color} ></rect>
+          <rect style={boxStyle} x={boxStyle.left} y={boxStyle.top} key={i} fill="black" ></rect>
         );
       });
     },
@@ -49,7 +47,7 @@ export const HighlightOverlay: React.FunctionComponent<Props> = ({
           <rect style={getPageStyle()} fill="white"></rect>
           {children && getUnmaskedArea(children)}
         </mask>
-        {/* <rect style={getPageStyle()} fill="yellow" opacity="0.6" mask={`url(#${maskId})`}></rect> */}
+        <rect style={getPageStyle()} fill="white" opacity="0.6" mask={`url(#${maskId})`}></rect>
       </svg>
     </div>
   );
