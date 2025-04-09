@@ -1,7 +1,31 @@
 import React, { useState, useContext, ReducerAction } from 'react';
 import * as ReactDOM from 'react-dom';
-import { BoundingBox as Props, HLaction, hltype } from '../../types/hightlight';
+import { BoundingBoxText as Props, HLaction, hltype } from '../../types/hightlight';
 import { v4 as uuidv4 } from 'uuid';
+
+
+export const hlInitial: Array<Props> = [
+    {
+        color: 'yellow',
+        content: "",
+        BoxList: [
+            {
+                page: 0,
+                top: 170,
+                left: 415,
+                height: 30,
+                width: 110,
+            },
+            {
+                page: 0,
+                top: 421,
+                left: 283,
+                height: 15,
+                width: 55,
+            },
+        ]
+    },
+];
 
 
 export default function hlReducer(boxlist: Props[], action: HLaction): Props[] {
@@ -9,12 +33,9 @@ export default function hlReducer(boxlist: Props[], action: HLaction): Props[] {
     switch (action.type) {
         case hltype.ADD: {
             oldstate.push({
-                page: action.page,
                 color: action.color,
-                top: action.top,
-                left: action.left,
-                height: action.height,
-                width: action.width
+                content: action.content,
+                BoxList: action.BoxList
             });
             return oldstate;
         }

@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import msgReducer from './msgReducer'
 import { msgList, msgAction, msgact, spid, msgState } from '../../types/msgchat';
 import { v4 as uuidv4 } from 'uuid';
-import { Text, Container, Loader, ScrollArea, Paper, Skeleton, Alert, List, Textarea, TypographyStylesProvider, Box, Button, ActionIcon } from '@mantine/core';
+import { Text, Container, Loader, ScrollArea, Paper, Skeleton, Alert, List, Textarea, TypographyStylesProvider, Box, Button, ActionIcon, Divider } from '@mantine/core';
 import { msg_Usr, msg_Ser, msg_Err, msg_Ser_Loading } from './msg_module'
 import { IconAlertCircle, IconAperture, IconCircleArrowUp, IconCircleArrowUpFilled } from '@tabler/icons-react';
 import useWindowSize from '../../utils/useWindowSize';
@@ -29,7 +29,7 @@ const msginitiallist: msgList = [
     },
     {
         ...msg_Usr(),
-        select: ":Ddjiailwjdljslkdjlkajdklwjdasdasd",
+        select: ":Ddjiailwjdljslkdjlkajdklssssssssssssssssssswjdasdasd",
         context: "No,u can",
     },
     // {
@@ -113,11 +113,18 @@ const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
                 shadow="xs" radius="md" p="sm"
                 withBorder >
                 {select === null ? null :
-                    <Box w={Math.min(w, selectLen)}>
-                        < Text truncate>
-                            {"--------------------" + select + "----------------"}
-                        </Text >
-                    </Box>
+                    <React.Fragment>
+                        <Box
+                            className='msgselect'
+                            w={Math.min(w, selectLen) + 10}>
+                            < Text
+                                truncate
+                            >
+                                {select}
+                            </Text >
+                        </Box>
+                        {/* <Divider my="sm" p={1}/> */}
+                    </React.Fragment >
                 }
                 <Box
                     w={Math.min(w, contextLen) + 5}
@@ -278,8 +285,8 @@ export default function PaperCopliot() {
         const msgjson = JSON.stringify(message);
         socket.emit("client_message", msgjson);
         // ws.send(msgjson);
-        // setTimeout(() => { scrollToBottom() }, 1);
-        // setTimeout(() => { handleMegGet("jdilkadsadasd jdiad11111111\ndasdasd dsa\nHello", loadingmsgid) }, 3000);
+        // setTimeout(() => {scrollToBottom()}, 1);
+        // setTimeout(() => {handleMegGet("jdilkadsadasd jdiad11111111\ndasdasd dsa\nHello", loadingmsgid)}, 3000);
         // handleMegGet("jdilkadsadasd jdiad11111111\ndasdasd dsa\nHello", loadingmsgid)
 
     }
@@ -294,7 +301,7 @@ export default function PaperCopliot() {
         });
         scrollToBottom();
         console.log("GetEnd");
-        // setTimeout(() => { scrollToBottom() }, 1);
+        // setTimeout(() => {scrollToBottom()}, 1);
     }
 
     const [isFocus, setIsFocus] = useState(false);

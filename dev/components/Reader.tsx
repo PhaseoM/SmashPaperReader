@@ -21,10 +21,9 @@ import { HighlightOverlayDemo } from './HighlightOverlayDemo';
 import { NoteTakingDemo } from './NoteTakingDemo';
 import { Outline } from './Outline';
 import { ScrollToDemo } from './ScrollToDemo';
-import { TextHighlightDemo } from './TextHighlightDemo';
+import { HighlightRender } from '../myComponents/Highlight/HighlightRender';
 import { Thumbnail } from './Thumbnail';
 import SplitPane from 'react-split-pane';
-import { CompVisiableControl } from '../myComponents/Navigation/CompVisiableControl';
 
 
 import { NavItemContext } from '../context/NavContext';
@@ -160,7 +159,7 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
             <PageWrapper key={i} pageIndex={i} renderType={RENDER_TYPE.SINGLE_CANVAS}>
               <Overlay>
                 {/* <HighlightOverlayDemo pageIndex={i} /> */}
-                <TextHighlightDemo pageIndex={i} />
+                <HighlightRender pageIndex={i} />
                 <ScrollToDemo pageIndex={i} />
                 <CitationsDemo
                   annotations={annotations}

@@ -3,14 +3,15 @@ import * as ReactDOM from 'react-dom';
 import { NavItemContext } from '../context/NavContext';
 import { ToolPopContext } from '../context/PopoverConext';
 import React from 'react';
-import { AppShell, Container, ScrollArea } from '@mantine/core';
+import { AppShell, Container, Overlay, ScrollArea } from '@mantine/core';
 import SplitPane from 'react-split-pane';
 import Pane from 'react-split-pane';
 import { Allotment } from 'allotment'
 import { Route, RouteComponentProps } from 'react-router-dom';
 
 import { Navigate } from './Navigation/Navigate';
-import { CompVisiableControl } from './Navigation/CompVisiableControl';
+import { LeftWinVisableCtrl } from './Navigation/L_WinVisableCtrl';
+import { RightWinVisableCtrl } from './Navigation/R_WinVisableCtrl';
 
 import { Digest } from './RightWindow/Digest';
 
@@ -26,6 +27,11 @@ import useWindowSize from '../utils/useWindowSize'
 import { relative } from 'path';
 import { PopoverUp } from './ToolPopover';
 import { SimpleZoomControl } from '../components/SimpleZoomControl';
+
+import { HLContext } from '../context/HLContext';
+import hlReducer, { hlInitial } from '../myComponents/Highlight/hlReducer';
+import { BoundingBoxText as BoxProp } from '../types/hightlight';
+
 export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
     const [imp, setImp] = useState(0);
     const [selectedIdL, setSelectedIdL] = useState(-1);
@@ -62,83 +68,89 @@ export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprop
         setMinSizeR(width * 0.65);
         setMaxSizeR(width * 0.725);
     }, [width])
+
+    const [customHLcolor, setCustomHLcolor] = useState("yellow");
+    const [hlList, dispatch] = React.useReducer(hlReducer, hlInitial);
+
+
     return (
-        <NavItemContext.Provider value={{
-            impact: 0,
-            itemSelectedL: selectedIdL, setItemSelectedL: setSelectedIdL,
-            itemSelectedR: selectedIdR, setItemSelectedR: setSelectedIdR
+        <HLContext.Provider value={{
+            customHLcolor: customHLcolor,
+            setCustomHLcolor: setCustomHLcolor,
+            hlList: hlList,
+            hldispatch: dispatch
         }}>
-            <AppShell
-                // layout='alt'
-                navbar={<Navigate {...routeprops} />}
-                padding={0}
-            >
+            <NavItemContext.Provider value={{
+                impact: 0,
+                itemSelectedL: selectedIdL, setItemSelectedL: setSelectedIdL,
+                itemSelectedR: selectedIdR, setItemSelectedR: setSelectedIdR
+            }}>
+                <AppShell
+                    // layout='alt'
+                    navbar={<Navigate {...routeprops} />}
+                    padding={0}
+                >
 
-                {/* <Navigate {...routeprops} /> */}
-                {/* <SelectView isSelected={selectedId != -1} {...routeprops} /> */}
-                <ContextProvider>
-                    <SplitPane
-                        defaultSize={selectedIdR != -1 ? maxSizeR : width}
-                        minSize={selectedIdR != -1 ? minSizeR : width}
-                        maxSize={selectedIdR != -1 ? maxSizeR : width}
-                        resizerStyle={
-                            selectedIdR != -1 ? {
-                                cursor: 'col-resize'
-                            } : {
-                                cursor: 'default'
-                            }}
-                    >
+                    {/* <Navigate {...routeprops} /> */}
+                    {/* <SelectView isSelected={selectedId != -1} {...routeprops} /> */}
+                    <ContextProvider>
                         <SplitPane
-                            // className='Resizer.vertical'
-                            // split='vertical'
-                            defaultSize={selectedIdL != -1 ? minSizeL : 0}
-                            minSize={selectedIdL != -1 ? minSizeL : 0}
-                            maxSize={selectedIdL != -1 ? maxSizeL : 0}
-
-                            // resizerClassName={selectedId != -1 ? 'vertical' : 'horizontal'}
-                            // onDragFinished={() => {
-                            //     setC(c + 1);
-                            //     setC(c - 1);
-                            // }}
-                            onDragFinished={() => {
-                                setImp((imp + 1) % 10);
-                            }}
+                            defaultSize={selectedIdR != -1 ? maxSizeR : width}
+                            minSize={selectedIdR != -1 ? minSizeR : width}
+                            maxSize={selectedIdR != -1 ? maxSizeR : width}
                             resizerStyle={
-                                selectedIdL != -1 ? {
+                                selectedIdR != -1 ? {
                                     cursor: 'col-resize'
                                 } : {
                                     cursor: 'default'
                                 }}
                         >
-                            <CompVisiableControl />
-                            <ScrollArea h={height} type='hover' scrollHideDelay={500} >
-                                <ToolPopContext.Provider value={{
-                                    textSelected: textSelected,
-                                    textPos: textPos,
-                                    text: text,
-                                    setTextSelected: setTextSelected,
-                                    setTextPos: setTextPos,
-                                    setText: setText,
-                                }}>
-                                    <Reader {...routeprops} />
-                                </ToolPopContext.Provider>
-                                <div className='reader_ZoomControl'>
-                                    <SimpleZoomControl />
-                                </div>
-                            </ScrollArea>
-                            {/* <Pane/> */}
-                        </SplitPane>
-                        {selectedIdR != -1 ?
-                            <div>
-                                <ScrollArea h={height} type='hover' offsetScrollbars scrollHideDelay={500} >
-                                    <Digest />
+                            <SplitPane
+                                // className='Resizer.vertical'
+                                // split='vertical'
+                                defaultSize={selectedIdL != -1 ? minSizeL : 0}
+                                minSize={selectedIdL != -1 ? minSizeL : 0}
+                                maxSize={selectedIdL != -1 ? maxSizeL : 0}
+
+                                // resizerClassName={selectedId != -1 ? 'vertical' : 'horizontal'}
+                                // onDragFinished={() => {
+                                //     setC(c + 1);
+                                //     setC(c - 1);
+                                // }}
+                                onDragFinished={() => {
+                                    setImp((imp + 1) % 10);
+                                }}
+                                resizerStyle={
+                                    selectedIdL != -1 ? {
+                                        cursor: 'col-resize'
+                                    } : {
+                                        cursor: 'default'
+                                    }}
+                            >
+                                <LeftWinVisableCtrl />
+                                <ScrollArea h={height} type='hover' scrollHideDelay={500} >
+                                    <ToolPopContext.Provider value={{
+                                        textSelected: textSelected,
+                                        textPos: textPos,
+                                        text: text,
+                                        setTextSelected: setTextSelected,
+                                        setTextPos: setTextPos,
+                                        setText: setText,
+                                    }}>
+                                        <Reader {...routeprops} />
+                                    </ToolPopContext.Provider>
+                                    <Overlay className='reader_ZoomControl'>
+                                        <SimpleZoomControl />
+                                    </Overlay>
                                 </ScrollArea>
-                            </div>
-                            : null}
-                    </SplitPane>
-                </ContextProvider>
-            </AppShell>
-        </NavItemContext.Provider>
+                                {/* <Pane/> */}
+                            </SplitPane>
+                            <RightWinVisableCtrl />
+                        </SplitPane>
+                    </ContextProvider>
+                </AppShell>
+            </NavItemContext.Provider>
+        </HLContext.Provider>
     );
 }
 interface SelectViewProps extends RouteComponentProps {
@@ -163,7 +175,7 @@ function Splitter({ isSelected, ...routeprops }: SelectViewProps) {
             minSize={isSelected ? 600 : 0}
             maxSize={isSelected ? 1000 : 0}
         >
-            <CompVisiableControl />
+            <LeftWinVisableCtrl />
             <ContextProvider>
                 <Reader {...routeprops} />
             </ContextProvider>
@@ -180,7 +192,7 @@ function Myallo({ isSelected, ...routeprops }: SelectViewProps) {
             vertical={true}
         >
             <div>
-                <CompVisiableControl />
+                <LeftWinVisableCtrl />
             </div>
             <div>
                 <ContextProvider>

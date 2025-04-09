@@ -15,15 +15,18 @@ export type Size = Dimensions & Origin;
 
 export type BoundingBox = {
     page: number;
-    color: string;
 } & Size;
 
-
+export type BoundingBoxText = {
+    color: string;
+    content: string;
+    BoxList: BoundingBox[];
+};
 
 export type HLaction = {
     type: string,
     id: number,
-} & BoundingBox;
+} & BoundingBoxText;
 
 export enum hltype {
     DEL = "delete",

@@ -13,12 +13,12 @@ import useWindowSize from '../../utils/useWindowSize';
 
 
 
-export const CompVisiableControl = () => {
+export const LeftWinVisableCtrl = () => {
     const { width, height } = useWindowSize();
-    const { 
+    const {
         itemSelectedL: idL, setItemSelectedL: setIdL,
         itemSelectedR: idR, setItemSelectedR: setIdR,
-     } = useContext(NavItemContext);
+    } = useContext(NavItemContext);
     if (idL === -1) {
         return null;
     }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { BoundingBox as BoxProps, HLaction, hltype } from "../types/hightlight";
+import { BoundingBoxText as BoxProps, HLaction, hltype } from "../types/hightlight";
 
 const URL = 'http://localhost:5001';
 
@@ -24,12 +24,9 @@ export const HighlightEventListener = (dispatch: React.Dispatch<HLaction>) => {
             dispatch({
                 type: hltype.ADD,
                 id: 0,
-                page: action.page,
                 color: action.color,
-                top: action.top,
-                left: action.left,
-                height: action.height,
-                width: action.width
+                content: "",
+                BoxList: action.BoxList
             });
         }
 
@@ -39,12 +36,9 @@ export const HighlightEventListener = (dispatch: React.Dispatch<HLaction>) => {
                 dispatch({
                     type: hltype.ADD,
                     id: 0,
-                    page: Data[i].page,
+                    content: "",
                     color: 'yellow',
-                    top: Data[i].top,
-                    left: Data[i].left,
-                    height: Data[i].height,
-                    width: Data[i].width
+                    BoxList: Data[i].BoxList
                 });
             }
         }
