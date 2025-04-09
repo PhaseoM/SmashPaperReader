@@ -26,6 +26,7 @@ export const HighlightEventListener = (dispatch: React.Dispatch<HLaction>) => {
                 id: 0,
                 color: action.color,
                 content: "",
+                UniteBox: action.UniteBox,
                 BoxList: action.BoxList
             });
         }
@@ -38,6 +39,7 @@ export const HighlightEventListener = (dispatch: React.Dispatch<HLaction>) => {
                     id: 0,
                     content: "",
                     color: 'yellow',
+                    UniteBox: Data[i].UniteBox,
                     BoxList: Data[i].BoxList
                 });
             }

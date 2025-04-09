@@ -20,6 +20,7 @@ export type BoundingBox = {
 export type BoundingBoxText = {
     color: string;
     content: string;
+    UniteBox: BoundingBox;
     BoxList: BoundingBox[];
 };
 

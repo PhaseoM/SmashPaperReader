@@ -8,6 +8,13 @@ export const hlInitial: Array<Props> = [
     {
         color: 'yellow',
         content: "",
+        UniteBox: {
+            page: 0,
+            top: 170,
+            left: 415,
+            height: 30,
+            width: 110,
+        },
         BoxList: [
             {
                 page: 0,
@@ -35,6 +42,7 @@ export default function hlReducer(boxlist: Props[], action: HLaction): Props[] {
             oldstate.push({
                 color: action.color,
                 content: action.content,
+                UniteBox:action.UniteBox,
                 BoxList: action.BoxList
             });
             return oldstate;
