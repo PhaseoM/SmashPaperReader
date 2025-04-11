@@ -159,8 +159,7 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
             <PageWrapper key={i} pageIndex={i} renderType={RENDER_TYPE.SINGLE_CANVAS}>
               <Overlay>
                 {/* <HighlightOverlayDemo pageIndex={i} /> */}
-                <HighlightRender pageIndex={i} />
-                <ScrollToDemo pageIndex={i} />
+                {/* <ScrollToDemo pageIndex={i} /> */}
                 <CitationsDemo
                   annotations={annotations}
                   pageIndex={i}
@@ -171,6 +170,7 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
                   pageIndex={i}
                   parentRef={pdfScrollableRef}
                 />
+                <HighlightRender pageIndex={i} />
               </Overlay>
             </PageWrapper>
           ))}

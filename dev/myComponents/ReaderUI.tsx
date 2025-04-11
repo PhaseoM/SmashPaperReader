@@ -69,12 +69,15 @@ export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprop
         setMaxSizeR(width * 0.725);
     }, [width])
 
+    const [curId, setCurID] = useState(-1);
     const [customHLcolor, setCustomHLcolor] = useState("yellow");
     const [hlList, dispatch] = React.useReducer(hlReducer, hlInitial);
 
 
     return (
         <HLContext.Provider value={{
+            curID: curId,
+            setCurID: setCurID,
             customHLcolor: customHLcolor,
             setCustomHLcolor: setCustomHLcolor,
             hlList: hlList,

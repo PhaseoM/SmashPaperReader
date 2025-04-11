@@ -33,3 +33,14 @@ export enum hltype {
     DEL = "delete",
     ADD = "addbox",
 }
+
+export const dVal: HLaction = {
+    type: "undefined",
+    id: 0,
+    color: "",
+    content: "",
+    UniteBox: {
+        page: 0, top: 0, left: 0, height: 0, width: 0,
+    },
+    BoxList: []
+}

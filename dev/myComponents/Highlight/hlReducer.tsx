@@ -10,10 +10,10 @@ export const hlInitial: Array<Props> = [
         content: "",
         UniteBox: {
             page: 0,
-            top: 170,
+            top: 150,
             left: 415,
-            height: 30,
-            width: 110,
+            height: 100,
+            width: 210,
         },
         BoxList: [
             {
@@ -42,16 +42,15 @@ export default function hlReducer(boxlist: Props[], action: HLaction): Props[] {
             oldstate.push({
                 color: action.color,
                 content: action.content,
-                UniteBox:action.UniteBox,
+                UniteBox: action.UniteBox,
                 BoxList: action.BoxList
             });
             return oldstate;
         }
         case hltype.DEL: {
-            return oldstate.filter((item, index) =>
-                index != action.id
+            return oldstate.filter((_, index) =>
+                index !== action.id
             );
-
         }
         default: {
             console.error("hlReducer ActionTriggerError")

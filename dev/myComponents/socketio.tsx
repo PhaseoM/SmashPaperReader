@@ -44,7 +44,6 @@ export const HighlightEventListener = (dispatch: React.Dispatch<HLaction>) => {
                 });
             }
         }
-        console.log("addddddd")
         socket.on('Highlight_Added', ReceiveHLMsg_ADD);
         socket.on('Header_Highlight_Added', fun1);
         return () => {

@@ -5,12 +5,15 @@ import { DocumentContext } from '@allenai/pdf-components';
 import { TransformContext } from '@allenai/pdf-components';
 import { computeBoundingBoxStyle } from '@allenai/pdf-components';
 import { BoundingBoxType } from '@allenai/pdf-components';
+import { useContext } from 'react';
+import { HLContext } from '../../context/HLContext';
 
 export type Props = {
     className?: string;
     underlineClassName?: string;
     color?: string;
     id?: string;
+    parentid?: number;
     isHighlighted?: boolean;
     onClick?: () => void;
     voiceOverLabel?: string;
@@ -24,6 +27,7 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
     className,
     underlineClassName,
     id,
+    parentid,
     isHighlighted,
     onClick,
     color,
@@ -38,6 +42,8 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
         isHighlighted === true ? 'pdf-reader__overlay-bounding-box-highlighted' : '',
         className
     );
+
+    const { curID, setCurID } = useContext(HLContext);
 
     const getBoundingBoxStyle = React.useCallback(() => {
         return computeBoundingBoxStyle(boxSize, pageDimensions, rotation, scale);
@@ -75,34 +81,22 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
         default:
             colorValue = Col.pink;
     }
-    // console.log(`----color : ${color} , colorValue : ${colorValue}-----`);
     return (
         <React.Fragment>
             <div
-                className={`pdf-reader_backgroundLight --rect-color:@green`}
+                className={`pdf-reader_backgroundLight`}
                 style={{
                     ...getBoundingBoxStyle(),
                     '--rect-color': colorValue,
-                    // "background": "blue",
                 } as React.CSSProperties}
             />
-            {/* <div
-                className={`pdf-reader__overlay-bounding-box-underline `
-                    // ${underlineClassName || rotationClassName()}`
-                }
-                // className={`reader__page-overlay__bounding-box 
-                // reader__page-overlay__bounding-box-highlighted 
-                // reader__text-highlight__bbox
-                // ${rotationClassName()}`}
-                style={{
-                    ...getBoundingBoxStyle(),
-                }}
-            /> */}
             <div
                 id={id}
                 className={`${componentClassName} ${rotationClassName()}`}
                 style={getBoundingBoxStyle()}
-                onClick={onClick}
+                onClick={() => {
+                    setCurID(parentid === undefined ? -1 : parentid);
+                }}
                 role="button"
                 tabIndex={0}
                 aria-label={voiceOverLabel}
@@ -111,3 +105,17 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
         </React.Fragment>
     );
 };
+
+
+/* <div
+    className={`pdf-reader__overlay-bounding-box-underline `
+        // ${underlineClassName || rotationClassName()}`
+    }
+    // className={`reader__page-overlay__bounding-box 
+    // reader__page-overlay__bounding-box-highlighted 
+    // reader__text-highlight__bbox
+    // ${rotationClassName()}`}
+    style={{
+        ...getBoundingBoxStyle(),
+    }}
+/> */
