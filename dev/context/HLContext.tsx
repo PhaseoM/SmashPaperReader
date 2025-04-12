@@ -5,7 +5,7 @@ interface HLContextElement {
     curID: number,
     customHLcolor: string,
     setCurID: (curID: number) => void,
-    setCustomHLcolor: (color: string) => void,
+    setCustomHLcolor: (customHLcolor: string) => void,
     hlList: BoundingBoxText[],
     hldispatch: React.Dispatch<HLaction>
 }

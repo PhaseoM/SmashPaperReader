@@ -6,6 +6,7 @@ import {
   PageWrapper,
   RENDER_TYPE,
   ScrollContext,
+  scrollToId,
   TransformContext,
 } from '@allenai/pdf-components';
 import * as React from 'react';
@@ -36,6 +37,8 @@ import { PopoverUp } from '../myComponents/ToolPopover';
 import { ToolPopContext } from '../context/PopoverConext';
 import { generatePageIdFromIndex } from '@allenai/pdf-components/src/utils/scroll';
 import { socket } from '../myComponents/socketio';
+import { RefContext } from '../context/RefContext';
+import { useWindowScroll } from '@mantine/hooks';
 
 
 export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
@@ -119,12 +122,12 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
     const element = pdfContentRef.current;
 
     const sendEvent = () => {
-      console.log("=========sendhl success=========");
+      // console.log("=========sendhl success=========");
       socket.emit('hl_poll_request');
     }
 
     // if (element) {
-    console.log("????????????????????")
+    // console.log("????????????????????")
     window.addEventListener('load', sendEvent);
     // }
 
@@ -134,15 +137,13 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
       // }
     };
   }, [])
-
-
-  const dRef = useRef(null);
+  const { ReaderPaneRef } = React.useContext(RefContext);
   return (
     // <BrowserRouter>
     //   <Route path="/">
     <div
       className="reader__container"
-      ref={dRef}
+      ref={ReaderPaneRef}
     >
       {/* <DemoHeaderContextProvider> */}
       {/* <Header pdfUrl={samplePdfUrl} /> */}
@@ -170,7 +171,7 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
                   pageIndex={i}
                   parentRef={pdfScrollableRef}
                 />
-                <HighlightRender pageIndex={i} />
+                <HighlightRender pageIndex={i} pdfScrollableRef={pdfScrollableRef} />
               </Overlay>
             </PageWrapper>
           ))}

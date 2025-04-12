@@ -21,7 +21,7 @@ export const RightWinVisableCtrl = () => {
         itemSelectedR: idR, setItemSelectedR: setIdR,
     } = useContext(NavItemContext);
     if (idR === -1) {
-        return null;
+        return <React.Fragment />;
     }
     else {
         switch (idR) {

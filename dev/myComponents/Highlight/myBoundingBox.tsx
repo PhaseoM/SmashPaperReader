@@ -7,6 +7,7 @@ import { computeBoundingBoxStyle } from '@allenai/pdf-components';
 import { BoundingBoxType } from '@allenai/pdf-components';
 import { useContext } from 'react';
 import { HLContext } from '../../context/HLContext';
+import { ToolPopContext } from '../../context/PopoverConext';
 
 export type Props = {
     className?: string;
@@ -14,6 +15,7 @@ export type Props = {
     color?: string;
     id?: string;
     parentid?: number;
+    content?: string;
     isHighlighted?: boolean;
     onClick?: () => void;
     voiceOverLabel?: string;
@@ -28,6 +30,7 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
     underlineClassName,
     id,
     parentid,
+    content,
     isHighlighted,
     onClick,
     color,
@@ -44,7 +47,14 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
     );
 
     const { curID, setCurID } = useContext(HLContext);
-
+    const {
+        textSelected,
+        textPos,
+        text,
+        setTextSelected,
+        setTextPos,
+        setText,
+    } = React.useContext(ToolPopContext);
     const getBoundingBoxStyle = React.useCallback(() => {
         return computeBoundingBoxStyle(boxSize, pageDimensions, rotation, scale);
     }, [pageDimensions, rotation, scale]);
@@ -94,8 +104,17 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
                 id={id}
                 className={`${componentClassName} ${rotationClassName()}`}
                 style={getBoundingBoxStyle()}
-                onClick={() => {
+                onClick={(event) => {
+                    setText(content === undefined ? "" : content);
                     setCurID(parentid === undefined ? -1 : parentid);
+                    setTextSelected(true);
+                    const mouseX: number = event.clientX;
+                    const mouseY: number = event.clientY;
+                    setTextPos({
+                        ...textPos,
+                        x: mouseX,
+                        y: mouseY,
+                    })
                 }}
                 role="button"
                 tabIndex={0}

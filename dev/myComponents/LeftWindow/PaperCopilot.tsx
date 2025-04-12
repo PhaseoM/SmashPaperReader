@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import msgReducer from './msgReducer'
 import { msgList, msgAction, msgact, spid, msgState } from '../../types/msgchat';
 import { v4 as uuidv4 } from 'uuid';
-import { Text, Container, Loader, ScrollArea, Paper, Skeleton, Alert, List, Textarea, TypographyStylesProvider, Box, Button, ActionIcon, Divider } from '@mantine/core';
+import { Text, Container, Loader, ScrollArea, Paper, Skeleton, Alert, List, Textarea, TypographyStylesProvider, Box, Button, ActionIcon, Divider, Center } from '@mantine/core';
 import { msg_Usr, msg_Ser, msg_Err, msg_Ser_Loading } from './msg_module'
 import { IconAlertCircle, IconAperture, IconCircleArrowUp, IconCircleArrowUpFilled } from '@tabler/icons-react';
 import useWindowSize from '../../utils/useWindowSize';
@@ -12,6 +12,11 @@ import { NavItemContext } from '../../context/NavContext';
 import { getActualWidthOfChars as getContextLen, opArgs } from '../../utils/useGetTextLength';
 import io from 'socket.io-client';
 import { socket } from '../socketio'
+import { ToolPopContext } from '../../context/PopoverConext';
+import { scrollToBbox } from '../Highlight/HighlightRender';
+import { HLContext } from '../../context/HLContext';
+import { useWindowScroll } from '@mantine/hooks';
+import { winSizeContext } from '../../context/winSizeContext';
 const usrid = "130";
 
 const msginitiallist: msgList = [
@@ -117,18 +122,11 @@ const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
                         <Box
                             className='msgselect'
                             w={Math.min(w, selectLen) + 10}>
-                            < Text
-                                truncate
-                            >
-                                {select}
-                            </Text >
+                            <Text truncate>{select}</Text >
                         </Box>
                         {/* <Divider my="sm" p={1}/> */}
-                    </React.Fragment >
-                }
-                <Box
-                    w={Math.min(w, contextLen) + 5}
-                >
+                    </React.Fragment >}
+                <Box w={Math.min(w, contextLen) + 5}>
                     <Text style={{ whiteSpace: 'pre-line' }}>
                         {actualContext}
                     </Text>
@@ -200,10 +198,19 @@ export default function PaperCopliot() {
     const [msglist, dispatch] = useReducer(msgReducer, msginitiallist);
     const [seltext, useSeltext] = useState<string | null>(null);
 
-
     const wRef = useRef<HTMLDivElement | null>(null);
     const [width, setWidth] = useState(0);
     const { width: w, height } = useWindowSize();
+    const { curID } = useContext(HLContext);
+    const { winSize, setWinSize } = useContext(winSizeContext);
+    const {
+        textSelected,
+        textPos,
+        text,
+        setTextSelected,
+        setTextPos,
+        setText,
+    } = React.useContext(ToolPopContext);
 
     useEffect(() => {
         const onMsgGet = (event: { data: any; }) => {
@@ -224,12 +231,13 @@ export default function PaperCopliot() {
         }
     }, []);
 
-
-
-
     useEffect(() => {
         if (wRef.current) {
             setWidth(wRef.current.offsetWidth * 0.65);
+            setWinSize({
+                ...winSize,
+                leftwinSize: { w: wRef.current.offsetWidth, h: wRef.current.offsetHeight },
+            });
         }
     }, [wRef.current?.offsetWidth]);
     // console.log(`~~~~~~rw: ${wRef.current?.offsetWidth}  sw: ${width}~~~~`);
@@ -284,11 +292,6 @@ export default function PaperCopliot() {
 
         const msgjson = JSON.stringify(message);
         socket.emit("client_message", msgjson);
-        // ws.send(msgjson);
-        // setTimeout(() => {scrollToBottom()}, 1);
-        // setTimeout(() => {handleMegGet("jdilkadsadasd jdiad11111111\ndasdasd dsa\nHello", loadingmsgid)}, 3000);
-        // handleMegGet("jdilkadsadasd jdiad11111111\ndasdasd dsa\nHello", loadingmsgid)
-
     }
 
     const handleMegGet = (response: msgState) => {
@@ -313,7 +316,8 @@ export default function PaperCopliot() {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 if (txtRef.current && txtRef.current.value) {
-                    handleUsrSend(txtRef.current.value, null);
+                    setText("");
+                    handleUsrSend(txtRef.current.value, text);
                     setTimeout(() => {
                         if (txtRef.current && txtRef.current.value) {
                             txtRef.current.value = "";
@@ -325,83 +329,93 @@ export default function PaperCopliot() {
         }
     };
 
+    const minRows = 3;
     return (
-        <div ref={wRef} className='papercopilot'>
-
+        <div className='papercopilot' ref={wRef} >
             <ScrollArea
                 viewportRef={viewportRef}
-                h={height - 80}
+                h={height - 40 * minRows - 15}
                 type='hover'
                 // offsetScrollbars
                 scrollHideDelay={500}
                 scrollbarSize={6}
-                pb={10}
-            >
-                {
-                    width != 0 ?
-                        msglist.map((msg, index) => (
-                            <MsgItem key={msg.msgid} w={width} msg={msg} />
-                        ))
-                        : <></>
-                }
-                {/* {
-                    width != 0 ?
-                        msglist.map((msg, index) => (
-                            <MsgItem key={msg.msgid} w={width} msg={msg} />
-                        ))
-                        : <></>
-                }
-                {
-                    width != 0 ?
-                        msglist.map((msg, index) => (
-                            <MsgItem key={msg.msgid} w={width} msg={msg} />
-                        ))
-                        : <></>
-                } */}
+                pb={10}>
+                {width != 0 ?
+                    msglist.map((msg, index) => (
+                        <MsgItem key={msg.msgid} w={width} msg={msg} />
+                    ))
+                    : <></>}
+                {/* {width != 0 ?
+                    msglist.map((msg, index) => (
+                        <MsgItem key={msg.msgid} w={width} msg={msg} />
+                    ))
+                    : <></>}
+                {width != 0 ?
+                    msglist.map((msg, index) => (
+                        <MsgItem key={msg.msgid} w={width} msg={msg} />
+                    ))
+                    : <></>} */}
             </ScrollArea>
-
-
-            <div
-                style={{
-                    height: `${heightOftxt}px`,
-                    padding: '5px,0px,5px,0px',
-                }}
-            >
-                <div>
-                    <Textarea
-                        ref={txtRef}
-                        icon={<IconAperture />}
-                        placeholder='Send a message to PaperCopilot'
-                        radius="md"
-                        onBlur={() => {
-                            setIsFocus(false);
-                        }}
-                        onFocus={() => {
-                            setIsFocus(true);
-                        }}
-                        onKeyPress={(e) => {
-                            handleKeyPress(e);
-                        }}
-                    />
-                </div>
-                <ActionIcon
-                    className='upLoad'
-                    variant="transparent"
-                    size='lg'
+            <div style={{
+                // height: `${heightOftxt}px`,
+                // padding: '5px 10px 5px 0px',
+                position: 'absolute',
+                // display: "flex",
+                // justifySelf: "center",
+                width: "95%",
+                bottom: 10,
+            }}>
+                <Paper radius="sm" p="xs" pt={1} pb={1} withBorder
+                    style={{
+                        zIndex: 1,
+                        cursor: text === "" ? "default" : "pointer",
+                    }}
+                    onClick={() => {
+                        console.log("ssssssssscroll");
+                        scrollToBbox(curID);
+                    }}
+                >
+                    <Text fz="sm" lineClamp={1}
+                        c={text === "" ? "gray.4" : "dark.9"}>
+                        {text === "" ? "Selected Text" : text}
+                    </Text >
+                </Paper >
+                <Textarea
+                    ref={txtRef}
+                    icon={<IconAperture />}
+                    placeholder='Send a message to PaperCopilot'
+                    radius="sm"
+                    autosize
+                    minRows={minRows}
+                    onBlur={() => {
+                        setIsFocus(false);
+                    }}
+                    onFocus={() => {
+                        setIsFocus(true);
+                    }}
+                    onKeyPress={(e) => {
+                        handleKeyPress(e);
+                    }}
+                />
+                <ActionIcon className='upLoad' variant="transparent" size='lg'
+                    style={{
+                        bottom: "25%",
+                        right: 5,
+                        display: "flex",
+                        position: "absolute",
+                        justifySelf: "flex-end",
+                        zIndex: 1,
+                    }}
                     onClick={() => {
                         if (txtRef.current) {
                             if (txtRef.current.value) {
-                                handleUsrSend(txtRef.current.value, null)
+                                setText("");
+                                handleUsrSend(txtRef.current.value, text)
                                 txtRef.current.value = "";
                             }
                         }
-                    }}
-                >
-                    <IconCircleArrowUpFilled
-                        // color='&#xf6fe;'
-                        size="1.75rem"
-                    />
-
+                    }}>
+                    <IconCircleArrowUpFilled size="1.75rem" />
                 </ActionIcon>
             </div>
         </div >

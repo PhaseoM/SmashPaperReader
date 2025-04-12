@@ -9,8 +9,11 @@ import { Button, CloseButton } from '@mantine/core';
 import { HLContext } from '../../context/HLContext';
 import { CSSProperties, useContext, useEffect, useRef, useState } from 'react';
 import { ToolPopContext } from '../../context/PopoverConext';
+import { RefContext } from '../../context/RefContext';
+import { scrollToID } from '../../utils/scroll';
 type Props = {
   pageIndex: number;
+  pdfScrollableRef: React.RefObject<HTMLDivElement | null>
 };
 
 
@@ -19,6 +22,14 @@ type UboxProps = {
   content: string,
   bboxList: Array<React.ReactElement>,
 } & BoxProps;
+
+
+export const oneBoxMaxCnt: number = 100000;
+
+export const scrollToBbox = (id: number) => {
+  scrollToID("UniteBox-" + id.toString());
+}
+
 
 const Ubox: React.FunctionComponent<UboxProps> = ({
   id, content, bboxList, page, top, left, height, width
@@ -40,40 +51,52 @@ const Ubox: React.FunctionComponent<UboxProps> = ({
     setTextPos,
     setText,
   } = React.useContext(ToolPopContext);
+  const { ReaderPaneRef, ToolkitRef } = useContext(RefContext);
+
   useEffect(() => {
     const handle_Sp_down = (event: MouseEvent) => {
-      if (divRef.current && !divRef.current.contains(event.target as Node)) {
-        setCurID(-1);
+      if (ToolkitRef.current && !ToolkitRef.current.contains(event.target as Node)) {
+        if (curID !== -1 && divRef.current && !divRef.current.contains(event.target as Node)) {
+          setCurID(-1);
+          setTextSelected(false);
+          setText("");
+        }
       }
     }
-    window.addEventListener('mousedown', handle_Sp_down);
+    ReaderPaneRef.current?.addEventListener('mousedown', handle_Sp_down);
     return () => {
-      window.removeEventListener('mousedown', handle_Sp_down);
+      ReaderPaneRef.current?.removeEventListener('mousedown', handle_Sp_down);
     }
-  }, []);
+  }, [curID]);
   const { top: btop, left: bleft, height: bheight, width: bwidth } = getBoundingBoxStyle();
 
   return (
     <React.Fragment>
-      {curID === id ?
-        <React.Fragment>
-          <div
-            id={id.toString()}
-            // className={`UniteBoxBorder ${curID === id ? "uniteClicked" : "uniteUnClicked"}`}
-            className={`UniteBoxBorder uniteClicked`}
-            ref={divRef}
-            style={getBoundingBoxStyle()}
-            role='button'
-            onMouseDown={() => {
-              setTextSelected(true);
-              setText(content);
-              setTextPos({
-                ...textPos,
-                page: page,
-              })
-            }}
-          />
-          {/* <CloseButton
+      {/* {curID === id ? */}
+      <React.Fragment>
+        <div
+          id={"UniteBox-" + id.toString()}
+          className={`UniteBoxBorder ${curID === id ? "uniteClicked" : "uniteUnClicked"}`}
+          // className={`UniteBoxBorder uniteClicked`}
+          ref={divRef}
+          style={getBoundingBoxStyle()}
+          role='button'
+          onMouseDown={(event) => {
+            // console.log(content);
+            setTextSelected(true);
+            setText(content);
+            setCurID(id);
+            const mouseX: number = event.clientX;
+            const mouseY: number = event.clientY;
+            setTextPos({
+              ...textPos,
+              page: page,
+              x: mouseX,
+              y: mouseY,
+            })
+          }}
+        />
+        {/* <CloseButton
             className='closebutton'
             style={{
               top: btop,
@@ -88,8 +111,8 @@ const Ubox: React.FunctionComponent<UboxProps> = ({
               })
             }}
           /> */}
-        </React.Fragment>
-        : null}
+      </React.Fragment>
+      {/* : null} */}
       {bboxList}
     </React.Fragment>
   );
@@ -97,16 +120,18 @@ const Ubox: React.FunctionComponent<UboxProps> = ({
 
 
 
-export const HighlightRender: React.FunctionComponent<Props> = ({ pageIndex }: Props) => {
-
-
+export const HighlightRender: React.FunctionComponent<Props> = ({ pageIndex, pdfScrollableRef }: Props) => {
   const { hlList, hldispatch } = React.useContext(HLContext);
-  // const [hlList, dispatch] = React.useReducer(hlReducer, hlInitial);
 
   HighlightEventListener(hldispatch);
+
+  const { pageDimensions } = React.useContext(DocumentContext);
+
+  // console.log("----");
+  // console.log(pageDimensions);
+  // console.log("----");
   function renderHighlightedBoundingBoxes(): Array<React.ReactElement> {
     const boxes: Array<React.ReactElement> = [];
-    const oneBoxMaxCnt: number = 100000;
     hlList.map((hlItem, i) => {
       const { color, content, UniteBox, BoxList } = hlItem;
       if (UniteBox.page === pageIndex) {
@@ -118,13 +143,15 @@ export const HighlightRender: React.FunctionComponent<Props> = ({ pageIndex }: P
               parentid: i,
               color: color,
               className: 'reader_highlight_bbox',
+              content: content,
               isHighlighted: true,
+              // id: i * oneBoxMaxCnt + j,
               key: i * oneBoxMaxCnt + j,
             };
             onebox.push(<BoundingBox {...props} />);
           }
         });
-        boxes.push(<Ubox {...UniteBox} id={i} bboxList={onebox} content={content} />);
+        boxes.push(<Ubox key={i} {...UniteBox} id={i} bboxList={onebox} content={content} />);
       }
     });
     return boxes;
