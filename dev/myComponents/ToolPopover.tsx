@@ -31,7 +31,7 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
     pageIndex, annotations, parentRef
 }: Props) => {
     //context
-    const { ReaderPaneRef, ToolkitRef, ReaderScrollRef } = useContext(RefContext);
+    const { ReaderPaneRef, ToolkitRef, ReaderScrollRef, InputRef } = useContext(RefContext);
     const { pageDimensions } = useContext(DocumentContext);
     const { rotation, scale } = React.useContext(TransformContext);
     const { winSize, setWinSize } = useContext(winSizeContext);
@@ -111,7 +111,16 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
             }
             else {
                 if (IDRef.current === -1) {
-                    setTextSelected(false);
+                    if (ToolkitRef.current) {
+                        if (!ToolkitRef.current.contains(e.target as Node)) {
+                            setTextSelected(false);
+                            setText("");
+                        }
+                    }
+                    else {
+                        setTextSelected(false);
+                        setText("");
+                    }
                 }
             }
         }
@@ -194,9 +203,12 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
                         onMouseDown={() => {
                             // setCurID(-1);
                             setIdL(2);
-                            const selection = window.getSelection();
-                            selection?.removeAllRanges();
-                            setTextSelected(false);
+                            setTimeout(() => {
+                                const selection = window.getSelection();
+                                selection?.removeAllRanges();
+                                setTextSelected(false);
+                                InputRef.current?.focus();
+                            }, 100);
                         }}
                     >
                         <IconQuestionMark size="1.125rem" />

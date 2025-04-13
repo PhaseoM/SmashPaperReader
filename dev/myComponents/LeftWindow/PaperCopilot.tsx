@@ -17,6 +17,7 @@ import { scrollToBbox } from '../Highlight/HighlightRender';
 import { HLContext } from '../../context/HLContext';
 import { useWindowScroll } from '@mantine/hooks';
 import { winSizeContext } from '../../context/winSizeContext';
+import { RefContext } from '../../context/RefContext';
 const usrid = "130";
 
 const msginitiallist: msgList = [
@@ -34,7 +35,7 @@ const msginitiallist: msgList = [
     },
     {
         ...msg_Usr(),
-        select: ":Ddjiailwjdljslkdjlkajdklssssssssssssssssssswjdasdasd",
+        select: `Scholarly publications are key to the transfer of knowledge from scholars to others.However, research papers are information- dense, and as the volume of the scientific literature grows, the need for new technology to support the reading process grows. `,
         context: "No,u can",
     },
     // {
@@ -101,7 +102,8 @@ const getSubMaxLen = (str: string) => {
 
 const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
     const { id, msgid, select, context, isloading } = msg;
-    let selectLen = getContextLen(select, { size: 14, family: "Segoe UI" });
+    // let selectLen = getContextLen(select, { size: 14, family: "Segoe UI" });
+    let selectLen = getSubMaxLen(select ? select : "");
     let contextLen = getSubMaxLen(context);
     // console.log(`w: ${w} contextlen: ${contextLen}`);
     const actualContext = autoWrap(context, Math.min(w, contextLen) + 10);
@@ -119,10 +121,17 @@ const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
                 withBorder >
                 {select === null ? null :
                     <React.Fragment>
-                        <Box
-                            className='msgselect'
+                        <Box className='msgselect'
                             w={Math.min(w, selectLen) + 10}>
-                            <Text truncate>{select}</Text >
+                            <div style={{
+                                width: 25,
+                                // height: "100%",
+                                background: "gray",
+                                opacity: 0.4,
+                                backgroundClip: "content-box",
+                                padding: "0px 5px 0px 0px",
+                            }} />
+                            <Text c="gray.5" lineClamp={5}>{select}</Text >
                         </Box>
                         {/* <Divider my="sm" p={1}/> */}
                     </React.Fragment >}
@@ -211,7 +220,7 @@ export default function PaperCopliot() {
         setTextPos,
         setText,
     } = React.useContext(ToolPopContext);
-
+    const { InputRef } = useContext(RefContext)
     useEffect(() => {
         const onMsgGet = (event: { data: any; }) => {
             const response = event.data;
@@ -244,10 +253,9 @@ export default function PaperCopliot() {
 
 
     let heightOftxt: number = 0;
-    const txtRef = useRef<HTMLTextAreaElement>(null);
     useEffect(() => {
-        if (txtRef.current) {
-            heightOftxt = txtRef.current.offsetHeight;
+        if (InputRef.current) {
+            heightOftxt = InputRef.current.offsetHeight;
         }
     }, []);
 
@@ -315,12 +323,12 @@ export default function PaperCopliot() {
         if (isFocus) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                if (txtRef.current && txtRef.current.value) {
+                if (InputRef.current && InputRef.current.value) {
                     setText("");
-                    handleUsrSend(txtRef.current.value, text);
+                    handleUsrSend(InputRef.current.value, text);
                     setTimeout(() => {
-                        if (txtRef.current && txtRef.current.value) {
-                            txtRef.current.value = "";
+                        if (InputRef.current && InputRef.current.value) {
+                            InputRef.current.value = "";
                         }
                     }, 1);
                     // txtRef.current.value = "";
@@ -376,12 +384,12 @@ export default function PaperCopliot() {
                     }}
                 >
                     <Text fz="sm" lineClamp={1}
-                        c={text === "" ? "gray.4" : "dark.9"}>
+                        c={text === "" ? "gray.4" : "gray.5"}>
                         {text === "" ? "Selected Text" : text}
                     </Text >
                 </Paper >
                 <Textarea
-                    ref={txtRef}
+                    ref={InputRef}
                     icon={<IconAperture />}
                     placeholder='Send a message to PaperCopilot'
                     radius="sm"
@@ -407,11 +415,11 @@ export default function PaperCopliot() {
                         zIndex: 1,
                     }}
                     onClick={() => {
-                        if (txtRef.current) {
-                            if (txtRef.current.value) {
+                        if (InputRef.current) {
+                            if (InputRef.current.value) {
                                 setText("");
-                                handleUsrSend(txtRef.current.value, text)
-                                txtRef.current.value = "";
+                                handleUsrSend(InputRef.current.value, text)
+                                InputRef.current.value = "";
                             }
                         }
                     }}>

@@ -132,6 +132,7 @@ export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprop
     const ReaderPaneRef = useRef(null);
     const ToolkitRef = useRef(null);
     const ReaderScrollRef = useRef(null);
+    const InputRef = useRef(null);
     return (
         <winSizeContext.Provider value={{
             winSize: winSize,
@@ -141,6 +142,7 @@ export const ReaderUI: React.FunctionComponent<RouteComponentProps> = (routeprop
                 ReaderPaneRef: ReaderPaneRef,
                 ToolkitRef: ToolkitRef,
                 ReaderScrollRef: ReaderScrollRef,
+                InputRef: InputRef,
             }}>
                 <ToolPopContext.Provider value={{
                     textSelected: textSelected,
