@@ -1,15 +1,16 @@
-@blue: #92c1ff;
-@yellow: rgb(255, 252, 105);
-@red: rgb(255, 76, 76);
-@purple: rgb(182, 105, 255);
-@green: #00d100;
-@pink: rgb(255, 123, 196);
+@blue: #cfe0ff;
+@yellow: #fffd70;
+@red: #ffb5b5;
+@purple: #e8d0ff;
+@green: #c1ffa9;
+@pink: #ffc2e4;
 
 .pdf-reader_backgroundLight {
     position: absolute;
 
     // z-index: 5;
     background-color: var(--rect-color);
+    // background-color: @yellow;
     mix-blend-mode: multiply;
 }
 
@@ -63,4 +64,10 @@
         mix-blend-mode: screen;
     }
 
+}
+
+
+::selection {
+    background-color: #cfe0ff;
+    color: #000000;
 }

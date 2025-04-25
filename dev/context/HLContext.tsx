@@ -12,7 +12,7 @@ interface HLContextElement {
 
 export let HLContext = createContext<HLContextElement>({
     curID: -1,
-    customHLcolor: 'yellow',
+    customHLcolor: 'blue',
     setCurID: () => { },
     setCustomHLcolor: () => { },
     hlList: [],

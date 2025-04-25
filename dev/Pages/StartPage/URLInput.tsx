@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@mantine/core';
+import { loadPDF_send } from '../../myComponents/socketio';
 
 export default function PaperURLInput(props: RouteComponentProps) {
     const inRef = useRef<HTMLInputElement>(null);
@@ -15,6 +16,7 @@ export default function PaperURLInput(props: RouteComponentProps) {
                         const url: string = inRef.current.value;
                         const encodeurl: string = encodeURIComponent(url);
                         props.history.push(`/reader?type=${0}&url=${encodeurl}`);
+                        loadPDF_send({ url: url });
                     }
                     else {
                         // const url: string = "https://arxiv.org/pdf/2310.07581";

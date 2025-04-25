@@ -12,9 +12,11 @@ interface ToolPopContextElement {
     textSelected: boolean;
     textPos: PosProps;
     text: string;
+    scrolltop: number;
     setTextSelected: (textSelected: boolean) => void;
     setTextPos: (textPos: PosProps) => void;
     setText: (text: string) => void;
+    setScrolltop: (texscrolltopt: number) => void;
 }
 
 export let ToolPopContext = createContext<ToolPopContextElement>({
@@ -29,7 +31,9 @@ export let ToolPopContext = createContext<ToolPopContextElement>({
         y: 0
     },
     text: "",
+    scrolltop: 0,
     setTextSelected: () => { },
     setTextPos: () => { },
-    setText: () => { }
+    setText: () => { },
+    setScrolltop: () => { }
 });

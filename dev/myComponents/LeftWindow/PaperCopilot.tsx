@@ -1,50 +1,28 @@
 import React, { useState, useContext, useReducer, useRef, useEffect, createContext, MutableRefObject } from 'react';
 import * as ReactDOM from 'react-dom';
 import msgReducer from './msgReducer'
-import { msgList, msgAction, msgact, spid, msgState } from '../../types/msgchat';
+import { msgList, msgAction, msgact, spid, msgState, msgHint } from '../../types/msgchat';
 import { v4 as uuidv4 } from 'uuid';
 import { Text, Container, Loader, ScrollArea, Paper, Skeleton, Alert, List, Textarea, TypographyStylesProvider, Box, Button, ActionIcon, Divider, Center } from '@mantine/core';
-import { msg_Usr, msg_Ser, msg_Err, msg_Ser_Loading } from './msg_module'
-import { IconAlertCircle, IconAperture, IconCircleArrowUp, IconCircleArrowUpFilled } from '@tabler/icons-react';
+import { state_Send, state_Receive, state_Err, state_Ser_Loading, action_Send, action_Ser_Loading } from './msg_module'
+import { IconAlertCircle, IconAperture, IconCircleArrowUp, IconCircleArrowUpFilled, IconCornerDownRight } from '@tabler/icons-react';
 import useWindowSize from '../../utils/useWindowSize';
 import { Input } from 'antd';
 import { NavItemContext } from '../../context/NavContext';
 import { getActualWidthOfChars as getContextLen, opArgs } from '../../utils/useGetTextLength';
 import io from 'socket.io-client';
-import { socket } from '../socketio'
+import { hint_Emit, hint_onReceive, msg_Emit, msg_onReceive, socketIO } from '../socketio'
 import { ToolPopContext } from '../../context/PopoverConext';
 import { scrollToBbox } from '../Highlight/HighlightRender';
 import { HLContext } from '../../context/HLContext';
 import { useWindowScroll } from '@mantine/hooks';
 import { winSizeContext } from '../../context/winSizeContext';
 import { RefContext } from '../../context/RefContext';
+import { HLaction } from '../../types/hightlight';
+import { msginitiallist } from './msgReducer'
+import { PcContext } from '../../context/PcContext';
 const usrid = "130";
 
-const msginitiallist: msgList = [
-    {
-        ...msg_Ser(),
-        context: "HelloReader!"
-    },
-    {
-        ...msg_Usr(),
-        context: "How can I implement the RBT?"
-    },
-    {
-        ...msg_Ser(),
-        context: "Sorry,I cant:<\nsadddddddda\naddddsdadsdaddasdadsdasdsadadasdsdadasdasdasdasasdadsassdd\nddddadsssdasdasdasdasdasddsdasdasdasdasddassdasdasdsadasdasdasdasd"
-    },
-    {
-        ...msg_Usr(),
-        select: `Scholarly publications are key to the transfer of knowledge from scholars to others.However, research papers are information- dense, and as the volume of the scientific literature grows, the need for new technology to support the reading process grows. `,
-        context: "No,u can",
-    },
-    // {
-    //     ...msg_Ser_Loading()
-    // },
-    // {
-    //     ...msg_Err()
-    // }
-]
 
 interface msgProps {
     w: number,
@@ -98,6 +76,62 @@ const getSubMaxLen = (str: string) => {
     return res;
 }
 
+const MsgHint: React.FC<msgProps> = ({ w, msg }) => {
+    const hintlist = msg.HintList;
+    const { curID, hlList, hldispatch } = useContext(HLContext);
+
+    function hintlistrender(): Array<React.ReactElement> {
+        const hints: Array<React.ReactElement> = [];
+        hintlist.map((msghint, i) => {
+            let contextLen = getSubMaxLen(msghint.hint);
+            hints.push(
+                <div
+                    key={i}
+                    style={{
+                        padding: 3,
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        cursor: "pointer",
+                    }}
+                    onClick={() => {
+                        hint_Emit({ id: msghint.id, hint: "" });
+                        setTimeout(() => {
+                            scrollToBbox(hlList.length);
+                        }, 10)
+                    }}
+                >
+                    <Paper shadow="xs" radius="lg" p="sm" withBorder
+                        bg="gray.1">
+                        {/* <div style={{
+                            display: "flex",
+                            top: "5",
+                            right: "20",
+                        }}>
+                            <IconCornerDownRight size={"1.25rem"} />
+                        </div> */}
+                        <Box w={Math.min(w, contextLen + 50) + 10}>
+                            <Text lineClamp={1} truncate>
+                                {msghint.hint}
+                            </Text>
+                        </Box>
+                    </Paper>
+                </div>
+
+            )
+        })
+        return hints;
+    }
+    if (hintlist.length > 0) {
+        return (
+            <React.Fragment>
+                {hintlistrender()}
+            </React.Fragment>
+        );
+    }
+    else {
+        return <React.Fragment />;
+    }
+}
 
 
 const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
@@ -106,7 +140,7 @@ const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
     let selectLen = getSubMaxLen(select ? select : "");
     let contextLen = getSubMaxLen(context);
     // console.log(`w: ${w} contextlen: ${contextLen}`);
-    const actualContext = autoWrap(context, Math.min(w, contextLen) + 10);
+    const actualContext = autoWrap(context, Math.min(w, contextLen) + 15);
     // const aw = Math.min(w, contextLen);
     // console.log(`------- w:${w} contextlen: ${contextLen}   actw: ${aw}  --------`)
     // const actualContext = autoWrap(context, 50);
@@ -116,15 +150,13 @@ const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
     }
     else {
         return (
-            <Paper
-                shadow="xs" radius="md" p="sm"
-                withBorder >
+            <Paper shadow="xs" radius="md" p="sm" withBorder >
                 {select === null ? null :
                     <React.Fragment>
                         <Box className='msgselect'
                             w={Math.min(w, selectLen) + 10}>
                             <div style={{
-                                width: 25,
+                                width: 20,
                                 // height: "100%",
                                 background: "gray",
                                 opacity: 0.4,
@@ -135,12 +167,11 @@ const MsgBlock: React.FC<msgProps> = ({ w, msg }) => {
                         </Box>
                         {/* <Divider my="sm" p={1}/> */}
                     </React.Fragment >}
-                <Box w={Math.min(w, contextLen) + 5}>
-                    <Text style={{ whiteSpace: 'pre-line' }}>
+                <Box w={Math.min(w, contextLen) + 15}>
+                    <Text >
                         {actualContext}
                     </Text>
                 </Box>
-
             </Paper >
         );
     }
@@ -176,18 +207,19 @@ const MsgItem: React.FC<msgProps> = ({ w, msg }) => {
         }
         case spid.serverid: {
             return (
-                <div className='msgitemLeft'>
-                    <MsgBlock w={w} msg={msg} />
-                </div>
+                <React.Fragment>
+                    <div className='msgitemLeft'>
+                        <MsgBlock w={w} msg={msg} />
+                    </div>
+                    <MsgHint w={w} msg={msg} />
+                </React.Fragment>
 
             );
 
         }
         case spid.msgerror: {
             return (
-                <div
-                    className='msgerror'
-                >
+                <div className='msgerror'>
                     <MsgBlockError w={w} msg={msg} />
                 </div>
             );
@@ -203,14 +235,16 @@ const MsgItem: React.FC<msgProps> = ({ w, msg }) => {
 
 
 export default function PaperCopliot() {
-    const [isConnected, setIsConnected] = useState(socket.connected);
-    const [msglist, dispatch] = useReducer(msgReducer, msginitiallist);
+    const minRows = 3;
+    let heightOftxt: number = 0;
+
     const [seltext, useSeltext] = useState<string | null>(null);
+    const [width, setWidth] = useState(0);
+    const [isFocus, setIsFocus] = useState(false);
 
     const wRef = useRef<HTMLDivElement | null>(null);
-    const [width, setWidth] = useState(0);
-    const { width: w, height } = useWindowSize();
-    const { curID } = useContext(HLContext);
+
+    const { curID, hlList, hldispatch } = useContext(HLContext);
     const { winSize, setWinSize } = useContext(winSizeContext);
     const {
         textSelected,
@@ -220,25 +254,10 @@ export default function PaperCopliot() {
         setTextPos,
         setText,
     } = React.useContext(ToolPopContext);
-    const { InputRef } = useContext(RefContext)
-    useEffect(() => {
-        const onMsgGet = (event: { data: any; }) => {
-            const response = event.data;
-            const MsgData: msgState = {
-                id: spid.serverid,
-                msgid: response.msgid,
-                context: response.context,
-                select: response.select,
-                isloading: false
-            }
-            console.log(event.data);
-            handleMegGet(MsgData);
-        }
-        socket.on('server_response', onMsgGet);
-        return () => {
-            socket.off('server_response', onMsgGet);
-        }
-    }, []);
+    const { msglist, msgdispatch } = useContext(PcContext);
+    const { ViewportRef: viewportRef, InputRef } = useContext(RefContext)
+
+    const { width: w, height } = useWindowSize();
 
     useEffect(() => {
         if (wRef.current) {
@@ -249,97 +268,68 @@ export default function PaperCopliot() {
             });
         }
     }, [wRef.current?.offsetWidth]);
-    // console.log(`~~~~~~rw: ${wRef.current?.offsetWidth}  sw: ${width}~~~~`);
 
 
-    let heightOftxt: number = 0;
     useEffect(() => {
         if (InputRef.current) {
             heightOftxt = InputRef.current.offsetHeight;
         }
     }, []);
 
-
-    const viewportRef = useRef<HTMLDivElement>(null);
     const scrollToBottom = () => {
         if (viewportRef.current && viewportRef.current.scrollHeight) {
             viewportRef.current.scrollTo({ top: viewportRef.current.scrollHeight, behavior: 'smooth' });
-            // console.log(viewportRef.current.scrollHeight);
         }
     }
 
-    const handleUsrSend = (send: string, select: string | null) => {
-        const message = {
-            id: usrid,
-            msgid: uuidv4(),
-            select: select,
-            send: send
-        }
-        dispatch({
-            type: msgact.USER_SEND,
-            id: usrid,
-            msgid: uuidv4(),
-            select: select,
-            send: send
-        });
-        dispatch({
-            type: msgact.ADD_LOADING,
-            id: spid.serverid,
-            msgid: message.msgid,
-            select: null,
-            send: "defaultContext_l"
-        });
-        // console.log(`
-        //     type: ${msgact.USER_SEND},
-        //     id: ${usrid},
-        //     msgid: ${uuidv4()},
-        //     select: ${select},
-        //     send: ${send}`
-        // );
+    const handleUsrSend = (message: msgAction) => {
+        msgdispatch(message);
+        msgdispatch(action_Ser_Loading);
+        msg_Emit(message);
         scrollToBottom();
-
-        const msgjson = JSON.stringify(message);
-        socket.emit("client_message", msgjson);
     }
 
-    const handleMegGet = (response: msgState) => {
-        dispatch({
-            type: msgact.AI_SEND_NORMAL,
-            id: response.id,
-            msgid: response.msgid,
-            select: response.select,
-            send: response.context
-        });
+    const handleMegGet = (msg: msgAction) => {
+        msgdispatch(msg);
         scrollToBottom();
-        console.log("GetEnd");
-        // setTimeout(() => {scrollToBottom()}, 1);
     }
 
-    const [isFocus, setIsFocus] = useState(false);
-    // useEffect(() => {
-    //     console.log("isForce:" + isFocus);
-    // }, [isFocus]);
+    const handleHintGet = (hint_r: HLaction) => {
+        hldispatch(hint_r);
+        scrollToBbox(hlList.length - 1);
+    }
+
     const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (isFocus) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 if (InputRef.current && InputRef.current.value) {
                     setText("");
-                    handleUsrSend(InputRef.current.value, text);
+                    handleUsrSend({
+                        ...action_Send,
+                        select: text,
+                        context: InputRef.current.value,
+                    });
                     setTimeout(() => {
                         if (InputRef.current && InputRef.current.value) {
                             InputRef.current.value = "";
                         }
                     }, 1);
-                    // txtRef.current.value = "";
                 }
             }
         }
     };
 
-    const minRows = 3;
+
+    msg_onReceive(handleMegGet);
+    hint_onReceive(handleHintGet);
+
     return (
-        <div className='papercopilot' ref={wRef} >
+        <div className='papercopilot' ref={wRef}
+            style={{
+                height: window.innerWidth,
+            }}
+        >
             <ScrollArea
                 viewportRef={viewportRef}
                 h={height - 40 * minRows - 15}
@@ -418,7 +408,12 @@ export default function PaperCopliot() {
                         if (InputRef.current) {
                             if (InputRef.current.value) {
                                 setText("");
-                                handleUsrSend(InputRef.current.value, text)
+                                handleUsrSend({
+                                    ...action_Send,
+                                    msgid: uuidv4(),
+                                    select: text,
+                                    context: InputRef.current.value,
+                                });
                                 InputRef.current.value = "";
                             }
                         }

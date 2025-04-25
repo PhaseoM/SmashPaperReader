@@ -36,7 +36,7 @@ import { SimpleZoomControl } from './SimpleZoomControl';
 import { PopoverUp } from '../myComponents/ToolPopover';
 import { ToolPopContext } from '../context/PopoverConext';
 import { generatePageIdFromIndex } from '@allenai/pdf-components/src/utils/scroll';
-import { socket } from '../myComponents/socketio';
+import { socketIO } from '../myComponents/socketio';
 import { RefContext } from '../context/RefContext';
 import { useWindowScroll } from '@mantine/hooks';
 
@@ -103,40 +103,6 @@ export const Reader: React.FunctionComponent<RouteComponentProps> = (props) => {
   }, [rawCitations, pageDimensions]);
   // console.log(`----------${numPages}------------`)
 
-
-
-
-  // useEffect(() => {
-  //   socket.emit('downloadpdf', { url: samplePdfUrl });
-  //   const RecieveMsg = (event: { data: { filename: string } }) => {
-  //     console.log(event.data.filename);
-  // }
-  //   socket.on('download_end', RecieveMsg);
-  //   return () => {
-  //     socket.off('download_end', RecieveMsg);
-  //   };
-  // }, [])
-
-
-  useEffect(() => {
-    const element = pdfContentRef.current;
-
-    const sendEvent = () => {
-      // console.log("=========sendhl success=========");
-      socket.emit('hl_poll_request');
-    }
-
-    // if (element) {
-    // console.log("????????????????????")
-    window.addEventListener('load', sendEvent);
-    // }
-
-    return () => {
-      // if (element) {
-      window.removeEventListener('load', sendEvent);
-      // }
-    };
-  }, [])
   const { ReaderPaneRef } = React.useContext(RefContext);
   return (
     // <BrowserRouter>

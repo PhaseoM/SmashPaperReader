@@ -1,9 +1,16 @@
+export type msgHint = {
+    id: string,
+    hint: string,
+}
+
+
 export type msgState = {
     id: string,
     msgid: string,
     select: string | null,
     context: string,
     isloading: boolean,
+    HintList: msgHint[],
 }
 
 export type msgList = Array<msgState>;
@@ -13,7 +20,8 @@ export type msgAction = {
     id: string,
     msgid: string,
     select: string | null,
-    send: string,
+    context: string,
+    HintList: msgHint[],
 }
 
 export enum spid {

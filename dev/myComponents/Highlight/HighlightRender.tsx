@@ -4,7 +4,7 @@ import { BoundingBoxText as BoxTextProps, BoundingBox as BoxProps, hltype, dVal 
 import * as React from 'react';
 
 import hlReducer from './hlReducer';
-import { HighlightEventListener, socket } from '../socketio';
+import { socketIO } from '../socketio';
 import { Button, CloseButton } from '@mantine/core';
 import { HLContext } from '../../context/HLContext';
 import { CSSProperties, useContext, useEffect, useRef, useState } from 'react';
@@ -123,13 +123,8 @@ const Ubox: React.FunctionComponent<UboxProps> = ({
 export const HighlightRender: React.FunctionComponent<Props> = ({ pageIndex, pdfScrollableRef }: Props) => {
   const { hlList, hldispatch } = React.useContext(HLContext);
 
-  HighlightEventListener(hldispatch);
-
   const { pageDimensions } = React.useContext(DocumentContext);
 
-  // console.log("----");
-  // console.log(pageDimensions);
-  // console.log("----");
   function renderHighlightedBoundingBoxes(): Array<React.ReactElement> {
     const boxes: Array<React.ReactElement> = [];
     hlList.map((hlItem, i) => {

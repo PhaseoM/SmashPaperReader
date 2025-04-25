@@ -82,6 +82,8 @@ const mockdataR = [
 export const Navigate: React.FunctionComponent<RouteComponentProps> = (routeprops) => {
     // const [active, setActive] = useState(-1);
     const {
+        setLastSelectedL: setLastidL,
+        setLastSelectedR: setLastidR,
         itemSelectedL: activeL, setItemSelectedL: setActiveL,
         itemSelectedR: activeR, setItemSelectedR: setActiveR,
     } = useContext(NavItemContext);
@@ -91,9 +93,15 @@ export const Navigate: React.FunctionComponent<RouteComponentProps> = (routeprop
             key={link.label}
             active={index === activeL}
             onClick={() => {
-                setActiveL(activeL === index ? -1 : index)
-            }
-            }
+                if (activeL === index) {
+                    setActiveL(-1);
+                }
+                else {
+                    setActiveL(index);
+                    setLastidL(index);
+                    console.log(index);
+                }
+            }}
         />
     ));
     const links_R = mockdataR.map((link, index) => (
@@ -102,9 +110,14 @@ export const Navigate: React.FunctionComponent<RouteComponentProps> = (routeprop
             key={link.label}
             active={index === activeR}
             onClick={() => {
-                setActiveR(activeR === index ? -1 : index)
-            }
-            }
+                if (activeR === index) {
+                    setActiveR(-1);
+                }
+                else {
+                    setActiveR(index);
+                    setLastidR(index);
+                }
+            }}
         />
     ));
     return (

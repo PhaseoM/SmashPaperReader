@@ -13,8 +13,11 @@ import useWindowSize from '../../utils/useWindowSize';
 import { Digest } from '../RightWindow/Digest';
 import { HighlightList } from '../RightWindow/HighlightList';
 
+type winProps = {
+    w: number,
+}
 
-export const RightWinVisableCtrl = () => {
+export const RightWinVisableCtrl: React.FC<winProps> = ({ w }: winProps) => {
     const { width, height } = useWindowSize();
     const {
         itemSelectedL: idL, setItemSelectedL: setIdL,
@@ -27,19 +30,11 @@ export const RightWinVisableCtrl = () => {
         switch (idR) {
             case 0:
                 return (
-                    <div>
-                        <ScrollArea h={height} type='hover' offsetScrollbars scrollHideDelay={500} >
-                            <Digest />
-                        </ScrollArea>
-                    </div>
+                    <Digest w={w} />
                 );
             case 1:
                 return (
-                    <div >
-                        <ScrollArea h={height} type='hover' offsetScrollbars scrollHideDelay={500} >
-                            <HighlightList />
-                        </ScrollArea>
-                    </div >
+                    <HighlightList />
                 );
             default: {
                 console.error("unexpected itemID");

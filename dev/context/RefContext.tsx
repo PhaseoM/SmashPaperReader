@@ -6,6 +6,7 @@ interface RefContextElement {
     ToolkitRef: MutableRefObject<HTMLDivElement | null>,
     ReaderScrollRef: MutableRefObject<HTMLDivElement | null>,
     InputRef: MutableRefObject<HTMLTextAreaElement | null>,
+    ViewportRef: MutableRefObject<HTMLDivElement | null>,
 }
 
 export let RefContext = createContext<RefContextElement>({
@@ -13,4 +14,5 @@ export let RefContext = createContext<RefContextElement>({
     ToolkitRef: { current: null },
     ReaderScrollRef: { current: null },
     InputRef: { current: null },
+    ViewportRef: { current: null },
 });

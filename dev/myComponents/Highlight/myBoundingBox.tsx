@@ -21,6 +21,24 @@ export type Props = {
     voiceOverLabel?: string;
 } & BoundingBoxType;
 
+export const enum HighLightColors {
+    blue = '#cfe0ff',
+    yellow = '#fffd70',
+    red = '#ff9189',
+    purple = '#e8d0ff',
+    green = '#c1ffa9',
+    pink = '#ffc2e4'
+};
+
+export const HighLightColorsMap: { [key: string]: string } = {
+    blue: '#cfe0ff',
+    yellow: '#fffd70',
+    red: '#ffb5b5',
+    purple: '#e8d0ff',
+    green: '#c1ffa9',
+    pink: '#ffc2e4'
+};
+
 export const BoundingBox: React.FunctionComponent<Props> = ({
     top,
     left,
@@ -64,32 +82,24 @@ export const BoundingBox: React.FunctionComponent<Props> = ({
     }, [rotation]);
 
     let colorValue = "yellow";
-    const enum Col {
-        blue = '#92c1ff',
-        yellow = 'rgb(255, 252, 105)',
-        red = 'rgb(255, 76, 76)',
-        purple = 'rgb(182, 105, 255)',
-        green = '#00d100',
-        pink = 'rgb(255, 123, 196)'
-    };
     switch (color) {
         case 'red':
-            colorValue = Col.red;
+            colorValue = HighLightColors.red;
             break;
         case 'yellow':
-            colorValue = Col.yellow;
+            colorValue = HighLightColors.yellow;
             break;
         case 'purple':
-            colorValue = Col.purple;
+            colorValue = HighLightColors.purple;
             break;
         case 'blue':
-            colorValue = Col.blue;
+            colorValue = HighLightColors.blue;
             break;
         case 'green':
-            colorValue = Col.green;
+            colorValue = HighLightColors.green;
             break;
         default:
-            colorValue = Col.pink;
+            colorValue = HighLightColors.pink;
     }
     return (
         <React.Fragment>

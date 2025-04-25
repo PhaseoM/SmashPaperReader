@@ -976,7 +976,7 @@ ajv@^8.0.1:
 
 allotment@^1.20.3:
   version "1.20.3"
-  resolved "https://registry.npmmirror.com/allotment/-/allotment-1.20.3.tgz"
+  resolved "https://registry.npmjs.org/allotment/-/allotment-1.20.3.tgz"
   integrity sha512-JCnklt7j0OsyDjD7A9AdT6wqJ3FSoo1ASV6w02Am02lo6NwO25yhG1DcWW8ueBV38ppXQmvrXBXuzX7iVkq6Tw==
   dependencies:
     classnames "^2.3.0"

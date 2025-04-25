@@ -2,6 +2,7 @@ import { useDisclosure, useWindowScroll } from '@mantine/hooks';
 import { Popover, Text, Button, ActionIcon, Container, Divider, Card, CopyButton, Tooltip } from '@mantine/core';
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ToolPopContext } from '../context/PopoverConext';
+import { v4 as uuidv4 } from 'uuid';
 import { PageToAnnotationsMap } from '../types/annotations';
 import { DocumentContext, PageRenderContext, TransformContext } from '@allenai/pdf-components'
 import { HLContext } from '../context/HLContext';
@@ -13,12 +14,16 @@ import {
     IconCopy,
     IconCheck,
     IconTrashX,
-    IconTrash
+    IconTrash,
+    IconSparkles,
 } from '@tabler/icons-react';
 import { RefContext } from '../context/RefContext';
 import useWindowSize from '../utils/useWindowSize';
 import { winSizeContext } from '../context/winSizeContext';
 import { NavItemContext } from '../context/NavContext';
+import { PcContext } from '../context/PcContext';
+import { action_Receive, action_Send, action_Ser_Loading, state_Receive } from './LeftWindow/msg_module';
+import { msg_Emit } from './socketio';
 
 type Props = {
     pageIndex: number,
@@ -40,9 +45,11 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
         textSelected,
         textPos,
         text,
+        scrolltop,
         setTextSelected,
         setTextPos,
         setText,
+        setScrolltop,
     } = React.useContext(ToolPopContext);
     const {
         itemSelectedL: idL, setItemSelectedL: setIdL,
@@ -56,14 +63,18 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
     IDRef.current = curID;
 
     const { width: w, height: h } = useWindowSize();
+    const rightwin = document.getElementById("right-win-ctrl");
+    const rightwin_w = rightwin?.clientWidth;
     const Reader_w = ReaderPaneRef.current ? ReaderPaneRef.current.offsetWidth : w;
-    if (ReaderPaneRef.current) {
-        console.log(ReaderPaneRef.current.offsetWidth);
-        console.log(w);
-    }
+    const total_w = Reader_w + (rightwin_w ? rightwin_w : 0);
+    // console.log(`readerw:${Reader_w} rightw:${rightwin_w} totalw;${total_w}`);
+    // if (ReaderPaneRef.current) {
+    //     console.log(ReaderPaneRef.current.offsetWidth);
+    //     console.log(w);
+    // }
     // const pageleft = (w - pageDimensions.width * scale + winSize.leftwinSize.w) / 2 + 41.5;
-    const pageleft = w - (Reader_w + pageDimensions.width * scale) / 2;
-    const scrolltop = ReaderScrollRef.current ? ReaderScrollRef.current?.scrollTop : 0;
+    const pageleft = w - (rightwin_w ? rightwin_w : 0) - (Reader_w + pageDimensions.width * scale) / 2;
+    // const scrolltop = ReaderScrollRef.current ? ReaderScrollRef.current?.scrollTop : 0;
     // console.log(scrolltop);
     useEffect(() => {
         const defaultTop = pageMargin + pageIndex * (2 * pageMargin + pageDimensions.height * scale);
@@ -84,7 +95,7 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
                     const mouseY: number = e.clientY;
                     let boxes: BoundingBox[] = [];
                     for (let i = 0; i < rects.length; i++) {
-                        console.log("rects:" + rects[i].top);
+                        // console.log("rects:" + rects[i].top);
                         boxes.push({
                             page: curPage,
                             top: (rects[i].top - defaultTop + scrolltop) / scale,
@@ -143,7 +154,15 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
     }, [pageleft, scrolltop, scale]);
 
     function renderPopover(): React.ReactElement {
+        const { msglist, msgdispatch } = useContext(PcContext);
+        const { ViewportRef } = useContext(RefContext);
+        const scrollToBottom = () => {
+            if (ViewportRef.current && ViewportRef.current.scrollHeight) {
+                ViewportRef.current.scrollTo({ top: ViewportRef.current.scrollHeight, behavior: 'smooth' });
+            }
+        }
         if (textSelected && textPos.page === pageIndex) {
+
             return (
                 <div
                     ref={ToolkitRef}
@@ -162,11 +181,23 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
                     {/* Translate */}
                     <ActionIcon size="md" radius="md" variant="subtle"
                         onMouseDown={() => {
-
-                            const selection = window.getSelection();
-                            selection?.removeAllRanges();
-                            setCurID(-1);
-                            setTextSelected(false);
+                            setIdL(2);
+                            const action = {
+                                ...action_Send,
+                                msgid: uuidv4(),
+                                select: text,
+                                context: "Translate it."
+                            }
+                            msgdispatch(action);
+                            msgdispatch(action_Ser_Loading);
+                            msg_Emit(action);
+                            setTimeout(() => {
+                                const selection = window.getSelection();
+                                selection?.removeAllRanges();
+                                setTextSelected(false);
+                                InputRef.current?.focus();
+                                scrollToBottom();
+                            }, 100);
                         }}
                     >
                         <IconAB2 size="1.125rem" />
@@ -195,7 +226,7 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
                                 setTextSelected(false);
                             }}
                         >
-                            <IconHighlight size="1.125rem" />
+                            <IconSparkles size="1.125rem" />
                         </ActionIcon>}
                     {/* <Divider orientation="vertical" /> */}
                     {/* Explain */}
@@ -219,6 +250,8 @@ export const PopoverUp: React.FunctionComponent<Props> = ({
                         {({ copied, copy }) => (
                             <ActionIcon size="md" radius="md" variant="subtle"
                                 onMouseDown={() => {
+                                    const selection = window.getSelection();
+                                    selection?.removeAllRanges();
                                     copy();
                                     setCurID(-1);
                                     setTextSelected(false);
