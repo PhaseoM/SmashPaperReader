@@ -1,0 +1,117 @@
+.papercopilot {
+    height: 100%;
+    // width: 100%;
+    // padding: 10px 10px 0px 10px;
+    background-color: @greylight_l;
+}
+
+.copilotInput {
+    padding: 5px 0px 5px 0px;
+}
+
+.msgitemLeft {
+    padding: 5px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.msgitemRight {
+    padding: 5px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.msgerror {
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+}
+
+.msgselect {
+    display: flex;
+    // background: #d9dadb;
+    flex-direction: row;
+    border-radius: 5px;
+}
+
+.copilot_upload {
+    display: flex;
+    position: absolute;
+    bottom: 5.5%;
+    right: 2%;
+    z-index: 1;
+}
+
+.copilot_paper_select {
+    display: flex;
+    position: absolute;
+    bottom: 5.5%;
+    left: 2%;
+    z-index: 1;
+}
+
+.related_paper {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    bottom: 10%;
+    left: 5%;
+    z-index: 30;
+    background: white;
+    border-radius: 3px;
+    border: 1px solid rgb(185, 185, 185);
+    box-shadow: 4px 4px 7px rgba(70, 70, 70, 0.1);
+}
+
+// .copilot_input {
+//     border: 1px solid #555454;
+//     border-radius: 4px;
+// }
+
+.copilot_subinput_2 {
+    border: 1px solid #bdbdbd;
+    border-radius: 6px;
+    background-color: white;
+    box-shadow: 4px 4px 7px rgba(70, 70, 70, 0.1);
+}
+
+// .copilot_textarea{
+
+// }
+
+.copilot_hint_paper {
+    display: flex;
+    flex-direction: row;
+    background: #f0f0f0;
+
+    &:hover {
+        background: #d6d6d6;
+    }
+}
+
+.copilot_tip {
+    display: flex;
+    flex-direction: row;
+    z-index: 10;
+    cursor: pointer;
+    background: #ebebeb;
+
+    &:hover {
+        background: #dadada;
+    }
+}
+
+.copilot_select_line {
+    width: 10;
+    background: rgb(71, 71, 71);
+    opacity: 0.4;
+    padding: "0px 5px 0px 0px";
+}
+
+.related_paper_button{
+    cursor: pointer;
+    border-radius: 3px;
+    &:hover{
+        background: rgb(224, 224, 224);
+    }
+}
