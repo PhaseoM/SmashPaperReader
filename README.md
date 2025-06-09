@@ -37,7 +37,7 @@ The Front-End and Back-end communicate with [Socket.IO](https://socket.io/).
 Display the AI conclusion and content related to the knowledge base (deving...)
 ## GettingStart
 ```
-cd './FrontEnd'
+cd './frontend'
 ```
 
 ```
