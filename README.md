@@ -1,5 +1,4 @@
 # Smash-PaperReader
----
 A intelligent paper reader with basic reading features, including highlighting, note-taking, PaperCopilot, and more.
 
 Front-End built with [webpack](https://webpack.js.org/), [Mantine v6](https://v6.mantine.dev/pages/getting-started/) and [pdf-component-library](https://github.com/allenai/pdf-component-library).
@@ -7,7 +6,6 @@ Back-End built with [Flask](https://flask.palletsprojects.com/en/stable/) and [p
 The Front-End and Back-end communicate with [Socket.IO](https://socket.io/).
 
 ## Features
----
 ### StartPage
 
 · Start reading with a valid URL.
@@ -38,16 +36,14 @@ The Front-End and Back-end communicate with [Socket.IO](https://socket.io/).
 
 Display the AI conclusion and content related to the knowledge base (deving...)
 ## GettingStart
----
-1. 
 ```
 cd './FrontEnd'
 ```
-2. 
+
 ```
 npm install
 ```
-3. 
+
 ```
 npm start
 ```
